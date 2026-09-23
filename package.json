@@ -1,0 +1,28 @@
+{
+  "name": "gzclp-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline workout tracker for a GZCLP-style program, installable as a PWA.",
+  "scripts": {
+    "build": "node build.mjs",
+    "build:artifact": "node build-artifact.mjs",
+    "dev": "node build.mjs --dev && npx --yes serve dist",
+    "preview": "npx --yes serve dist",
+    "test": "tsx --test src/engine/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "fonts": "node scripts/fetch-fonts.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.27.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0"
+  }
+}
