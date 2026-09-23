@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { nextQuote } from '../data/actions';
 import { getState, useApp } from '../data/store';
-import { ChalkFilter, Icon } from './components';
+import { ChalkFilter, formatRest, Icon } from './components';
 import { Finish } from './Finish';
 import { History } from './History';
 import { Program } from './Program';
@@ -9,6 +9,7 @@ import { Progress } from './Progress';
 import { SettingsScreen } from './Settings';
 import { Today } from './Today';
 import { Workout } from './Workout';
+import { remaining, useRestTimer } from './restTimer';
 
 function safeHistory(fn: () => void) {
   try {
@@ -53,6 +54,11 @@ export function App({ updateReady, onUpdate }: { updateReady: boolean; onUpdate:
   }, []);
 
   const inWorkout = route.name === 'workout' && s.active;
+  const sessionBar = !!s.active && !inWorkout && route.name !== 'finish';
+
+  useEffect(() => {
+    document.body.classList.toggle('in-session', sessionBar);
+  }, [sessionBar]);
   const tab = TABS.some((t) => t.name === route.name) ? route.name : route.name === 'settings' ? 'program' : null;
 
   return (
@@ -68,6 +74,7 @@ export function App({ updateReady, onUpdate }: { updateReady: boolean; onUpdate:
 
       {!inWorkout && route.name !== 'finish' && (
         <nav className="nav">
+          {sessionBar && s.active && <SessionBar variant={s.active.variant} onResume={() => go('workout')} />}
           <div className="nav-inner">
             {TABS.map((t) => (
               <button key={t.name} className={tab === t.name ? 'on' : ''} onClick={() => go(t.name)}>
@@ -80,7 +87,7 @@ export function App({ updateReady, onUpdate }: { updateReady: boolean; onUpdate:
       )}
 
       {updateReady && (
-        <div className="toast" style={inWorkout ? undefined : { bottom: 'calc(84px + var(--safe-b))' }}>
+        <div className="toast" style={inWorkout ? undefined : { bottom: `calc(${sessionBar ? 136 : 84}px + var(--safe-b))` }}>
           A new version is ready.
           <button className="btn primary" onClick={onUpdate}>
             Reload
@@ -88,5 +95,20 @@ export function App({ updateReady, onUpdate }: { updateReady: boolean; onUpdate:
         </div>
       )}
     </>
+  );
+}
+
+/** Shown above the tabs while a session is running, so the lifter can browse and jump back. */
+function SessionBar({ variant, onResume }: { variant: string; onResume: () => void }) {
+  const t = useRestTimer();
+  const rest = t.finished ? 'Rest over' : t.endAt != null ? `Rest ${formatRest(remaining(t))}` : null;
+  return (
+    <button className="session-bar" onClick={onResume}>
+      <span className="grow">
+        Day {variant} in progress
+        {rest && <span className={t.finished ? 'accent' : 'mu'}> · {rest}</span>}
+      </span>
+      <span className="btn primary">Resume</span>
+    </button>
   );
 }

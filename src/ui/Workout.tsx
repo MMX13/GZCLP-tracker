@@ -16,6 +16,7 @@ import { describeSetup, fmt, nextWeight, prevWeight, snapWeight } from '../engin
 import { formatDuration, formatRest, Icon, NumPad, Sheet, Tag, useLongPress } from './components';
 import { ExercisePicker } from './ExercisePicker';
 import { exMap, lastItem, lastRepsLabel } from './helpers';
+import { adjust, remaining, resetPaused, setDefaultRest, startOrPause, useRestTimer } from './restTimer';
 
 const FALLBACK: WeightMode = { kind: 'fixed', increment: 2.5 };
 
@@ -92,11 +93,16 @@ export function Workout({ go }: { go: (to: string, arg?: string) => void }) {
   return (
     <div className="screen with-timer">
       <div className="head">
-        <div>
-          <div className="eyebrow">
-            {loggedSets} of {totalSets} sets · {formatDuration(Date.now() - session.start)}
+        <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end', minWidth: 0 }}>
+          <button className="icon-btn" aria-label="Browse the app" onClick={() => go('today')} style={{ marginLeft: -8, marginBottom: 2 }}>
+            <Icon name="down" size={24} />
+          </button>
+          <div>
+            <div className="eyebrow">
+              {loggedSets} of {totalSets} sets · {formatDuration(Date.now() - session.start)}
+            </div>
+            <h1>Day {session.variant}</h1>
           </div>
-          <h1>Day {session.variant}</h1>
         </div>
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <button className="icon-btn" aria-label="Discard session" onClick={() => setConfirm('discard')}>
@@ -448,50 +454,10 @@ function PromptBox({ item }: { item: SessionItem }) {
 }
 
 function RestTimer({ defaultSeconds, vibrate }: { defaultSeconds: number; vibrate: boolean }) {
-  const [duration, setDuration] = useState(defaultSeconds);
-  const [endAt, setEndAt] = useState<number | null>(null);
-  const [paused, setPaused] = useState<number | null>(null);
-  const [finished, setFinished] = useState(false);
-  const [, tick] = useState(0);
-  const running = endAt != null;
+  const t = useRestTimer();
+  const running = t.endAt != null;
 
-  useEffect(() => {
-    if (!running && paused == null) setDuration(defaultSeconds);
-  }, [defaultSeconds, running, paused]);
-
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(() => {
-      tick((n) => n + 1);
-      if (endAt != null && Date.now() >= endAt) {
-        setEndAt(null);
-        setPaused(null);
-        setFinished(true);
-        if (vibrate) navigator.vibrate?.([300, 120, 300, 120, 500]);
-        beep();
-        setTimeout(() => setFinished(false), 4000);
-      }
-    }, 250);
-    return () => clearInterval(t);
-  }, [running, endAt, vibrate]);
-
-  const remaining = running ? Math.max(0, Math.ceil((endAt! - Date.now()) / 1000)) : paused ?? duration;
-  const adjust = (d: number) => {
-    if (running) setEndAt((e) => (e ?? Date.now()) + d * 1000);
-    else if (paused != null) setPaused((p) => Math.max(0, (p ?? 0) + d));
-    else setDuration((x) => Math.max(15, x + d));
-  };
-  const toggle = () => {
-    setFinished(false);
-    if (running) {
-      setPaused(remaining);
-      setEndAt(null);
-    } else {
-      unlockAudio();
-      setEndAt(Date.now() + (paused ?? duration) * 1000);
-      setPaused(null);
-    }
-  };
+  useEffect(() => setDefaultRest(defaultSeconds), [defaultSeconds]);
 
   return (
     <div className="timer">
@@ -500,57 +466,18 @@ function RestTimer({ defaultSeconds, vibrate }: { defaultSeconds: number; vibrat
         <button className="btn" onClick={() => adjust(-15)} aria-label="Subtract 15 seconds">
           −15
         </button>
-        <button
-          className={`clock ${finished ? 'done' : ''}`}
-          onClick={() => {
-            if (paused != null) {
-              setPaused(null);
-              setFinished(false);
-            }
-          }}
-          aria-label="Rest time"
-        >
-          {finished ? 'Go' : formatRest(remaining)}
+        <button className={`clock ${t.finished ? 'done' : ''}`} onClick={resetPaused} aria-label="Rest time">
+          {t.finished ? 'Go' : formatRest(remaining(t))}
         </button>
         <button className="btn" onClick={() => adjust(15)} aria-label="Add 15 seconds">
           +15
         </button>
-        <button className="btn primary" style={{ minWidth: 72 }} onClick={toggle}>
-          {running ? 'Pause' : paused != null ? 'Resume' : 'Start'}
+        <button className="btn primary" style={{ minWidth: 72 }} onClick={() => startOrPause(vibrate)}>
+          {running ? 'Pause' : t.paused != null ? 'Resume' : 'Start'}
         </button>
       </div>
     </div>
   );
-}
-
-let audioCtx: AudioContext | null = null;
-function unlockAudio() {
-  try {
-    audioCtx ??= new AudioContext();
-    if (audioCtx.state === 'suspended') void audioCtx.resume();
-  } catch {
-    /* audio unavailable */
-  }
-}
-
-function beep() {
-  try {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime;
-    [0, 0.25, 0.5].forEach((off, i) => {
-      const o = audioCtx!.createOscillator();
-      const g = audioCtx!.createGain();
-      o.frequency.value = i === 2 ? 1320 : 880;
-      g.gain.setValueAtTime(0.0001, t + off);
-      g.gain.exponentialRampToValueAtTime(0.25, t + off + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + off + 0.18);
-      o.connect(g).connect(audioCtx!.destination);
-      o.start(t + off);
-      o.stop(t + off + 0.2);
-    });
-  } catch {
-    /* audio unavailable */
-  }
 }
 
 function useWakeLock(enabled: boolean) {

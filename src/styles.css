@@ -103,6 +103,10 @@ input, select, textarea { font: inherit; color: inherit; }
 /* Bottom navigation and timer bar */
 .nav { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bar); border-top: 1px solid var(--border); padding: 8px 6px calc(10px + var(--safe-b)); z-index: 20; }
 .nav-inner { max-width: 520px; margin: 0 auto; display: flex; }
+.nav .session-bar { flex-direction: row; color: var(--text); display: flex; align-items: center; gap: 10px; width: 100%; max-width: 508px; margin: 0 auto 8px; padding: 6px 6px 6px 12px; background: var(--surface-2); border: 1px solid var(--accent); border-radius: 10px; font-size: 14px; text-align: left; }
+.session-bar .grow { flex: 1; min-width: 0; }
+.session-bar .btn { pointer-events: none; }
+.in-session .screen.with-nav { padding-bottom: calc(136px + var(--safe-b)); }
 .nav button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--muted); padding: 4px 0; }
 .nav button.on { color: var(--accent); }
 .nav svg { width: 24px; height: 24px; }
