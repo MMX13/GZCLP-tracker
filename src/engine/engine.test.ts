@@ -75,12 +75,13 @@ test('session orders T1, then T2, then T3 by saved order', () => {
 
 test('schemes by tier, track and stage', () => {
   assert.equal(schemeLabel(1, 'heavy', 0), '3×5');
-  assert.equal(schemeLabel(1, 'heavy', 1), '4×5');
+  assert.equal(schemeLabel(1, 'heavy', 1), '4×4');
   assert.equal(schemeLabel(1, 'heavy', 2), '5×3');
   assert.equal(schemeLabel(1, 'volume', 2), '3×6');
   assert.equal(schemeLabel(2, 'none', 1), '3×8');
   assert.equal(schemeLabel(3, 'none', 0), '2×8–15');
   assert.equal(buildSets(1, 'heavy', 1).length, 4);
+  assert.equal(buildSets(1, 'heavy', 1)[0].target, 4);
   const t3 = buildSets(3, 'none', 0);
   assert.equal(t3.length, 2);
   assert.equal(t3[1].amrap, true);

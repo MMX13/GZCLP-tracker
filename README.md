@@ -83,7 +83,7 @@ The PNG icons in `static/icons/` are rendered from `icon.svg` and `maskable.svg`
 
 ## Progression rules
 
-- T1 heavy track runs 3×5, 4×5, 5×3. T1 volume track and T2 run 3×10, 3×8, 3×6.
+- T1 heavy track runs 3×5, 4×4, 5×3. T1 volume track and T2 run 3×10, 3×8, 3×6.
 - Hitting every rep adds one increment next time at the same stage.
 - Missing any rep keeps the weight and stage. The next time that lift is opened, the app offers to drop a stage. Failing the last stage offers a deload to the first stage at 85% (configurable), rounded down to an achievable weight.
 - T3 is 2×8-15 with an AMRAP last set. 15 on the first set and at least 12 on the AMRAP moves the weight up. T3 never prompts or deloads.

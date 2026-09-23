@@ -8,7 +8,7 @@ export interface Scheme {
 
 export const HEAVY: Scheme[] = [
   { sets: 3, reps: 5, label: '3×5' },
-  { sets: 4, reps: 5, label: '4×5' },
+  { sets: 4, reps: 4, label: '4×4' },
   { sets: 5, reps: 3, label: '5×3' },
 ];
 
