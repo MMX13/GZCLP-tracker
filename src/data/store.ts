@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { syncItemSets } from '../engine/progression';
 import type { Exercise, Session, Slot } from '../engine/types';
 import type { Quote } from './quotes';
 
@@ -63,7 +64,7 @@ export function normalise(raw: unknown): AppState {
     slots: Array.isArray(r.slots) ? r.slots : [],
     sessions: Array.isArray(r.sessions) ? r.sessions : [],
     nextIndex: typeof r.nextIndex === 'number' ? r.nextIndex : 0,
-    active: r.active ?? null,
+    active: r.active ? { ...r.active, items: r.active.items.map(syncItemSets) } : null,
     settings: { ...DEFAULT_SETTINGS, ...(r.settings ?? {}) },
     customQuotes: Array.isArray(r.customQuotes) ? r.customQuotes : [],
     quoteCursor: typeof r.quoteCursor === 'number' ? r.quoteCursor : base.quoteCursor,

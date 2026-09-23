@@ -171,6 +171,17 @@ export function answerPrompt(item: SessionItem, accept: boolean): SessionItem {
   };
 }
 
+/**
+ * Bring an in-progress item's sets in line with its current scheme, keeping logged reps.
+ * Lets an app update that changes a scheme apply to a session that was already started.
+ */
+export function syncItemSets(item: SessionItem): SessionItem {
+  if (item.bodyweight) return item;
+  const fresh = buildSets(item.tier, item.track, item.stage);
+  const same = fresh.length === item.sets.length && fresh.every((s, i) => s.target === item.sets[i].target && s.amrap === item.sets[i].amrap);
+  return same ? item : { ...item, sets: rebuildSets(item, item.stage) };
+}
+
 /** Change the stage of an item mid-session. */
 export function setItemStage(item: SessionItem, stage: number): SessionItem {
   return { ...item, stage, sets: rebuildSets(item, stage) };

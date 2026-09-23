@@ -8,6 +8,7 @@ import {
   newItem,
   newState,
   promptFor,
+  syncItemSets,
 } from './progression';
 import { describeSetup, deloadWeight, floorWeight, nextWeight, plateCombos, prevWeight } from './weights';
 import { buildSets, itemSchemeLabel, schemeLabel } from './schemes';
@@ -85,6 +86,20 @@ test('schemes by tier, track and stage', () => {
   const t3 = buildSets(3, 'none', 0);
   assert.equal(t3.length, 2);
   assert.equal(t3[1].amrap, true);
+});
+
+test('an in-progress item picks up a changed scheme and keeps logged reps', () => {
+  const { slots, exercises } = program();
+  const sq = item(buildSession('A1', slots, exercises, 85), 'sq');
+  const old: SessionItem = {
+    ...sq,
+    stage: 1,
+    sets: [5, null, null, null, null].map((reps) => ({ target: 5, reps, amrap: false })),
+  };
+  const synced = syncItemSets(old);
+  assert.deepEqual(synced.sets.map((x) => [x.target, x.reps]), [[4, 5], [4, null], [4, null], [4, null]]);
+  const current = logAll(sq);
+  assert.equal(syncItemSets(current), current);
 });
 
 // Success
