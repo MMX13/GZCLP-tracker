@@ -1,4 +1,4 @@
-import type { WeightMode } from './types';
+import type { PlateUnit, WeightMode } from './types';
 
 export interface Combo {
   weight: number;
@@ -18,6 +18,13 @@ export function fmt(n: number): string {
   return String(round2(n));
 }
 
+export const KG_PER_LB = 0.45359237;
+
+/** Convert a plate size to kg. */
+export function toKg(n: number, unit: PlateUnit = 'kg'): number {
+  return unit === 'lb' ? n * KG_PER_LB : n;
+}
+
 const comboCache = new Map<string, Combo[]>();
 
 /**
@@ -25,19 +32,21 @@ const comboCache = new Map<string, Combo[]>();
  * Near-duplicates (within a third of an add-on, capped at 0.3 kg) are merged, keeping the
  * lighter value, which is usually the simpler setup.
  */
-export function plateCombos(plate: number, addon: number, maxAddons: number): Combo[] {
-  const key = `${plate}|${addon}|${maxAddons}`;
+export function plateCombos(plate: number, addon: number, maxAddons: number, unit: PlateUnit = 'kg'): Combo[] {
+  const key = `${plate}|${addon}|${maxAddons}|${unit}`;
   const cached = comboCache.get(key);
   if (cached) return cached;
 
   const raw: Combo[] = [];
-  const p = plate > 0 ? plate : 0;
-  const a = addon > 0 ? addon : 0;
+  const p = plate > 0 ? toKg(plate, unit) : 0;
+  const a = addon > 0 ? toKg(addon, unit) : 0;
+  // Pound plates convert to awkward kg values, so round those to 0.1 kg for display.
+  const round = unit === 'lb' ? (n: number) => Math.round(n * 10) / 10 : round2;
   const maxA = a > 0 ? Math.max(0, Math.floor(maxAddons)) : 0;
   const maxPlates = p > 0 ? Math.floor(MAX_KG / p) : 0;
   for (let n = 0; n <= maxPlates; n++) {
     for (let k = 0; k <= maxA; k++) {
-      raw.push({ weight: round2(n * p + k * a), plates: n, addons: k });
+      raw.push({ weight: round(n * p + k * a), plates: n, addons: k });
     }
   }
   raw.sort((x, y) => x.weight - y.weight || x.addons - y.addons);
@@ -55,7 +64,7 @@ export function plateCombos(plate: number, addon: number, maxAddons: number): Co
 
 export function weightList(mode: WeightMode): number[] | null {
   if (mode.kind !== 'plates') return null;
-  return plateCombos(mode.plate, mode.addon, mode.maxAddons).map((c) => c.weight);
+  return plateCombos(mode.plate, mode.addon, mode.maxAddons, mode.unit).map((c) => c.weight);
 }
 
 /** The next weight up from `w`. */
@@ -114,7 +123,7 @@ export function snapWeight(mode: WeightMode, w: number): number {
 /** How to load a plate machine for `w`, e.g. "6 plates + 1 add-on". Null for fixed-increment exercises. */
 export function describeSetup(mode: WeightMode, w: number): string | null {
   if (mode.kind !== 'plates') return null;
-  const combos = plateCombos(mode.plate, mode.addon, mode.maxAddons);
+  const combos = plateCombos(mode.plate, mode.addon, mode.maxAddons, mode.unit);
   let best: Combo | undefined;
   for (const c of combos) if (!best || Math.abs(c.weight - w) < Math.abs(best.weight - w)) best = c;
   if (!best) return null;

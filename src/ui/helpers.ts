@@ -97,7 +97,10 @@ export function deltaLabel(next: number, last: number | null): { text: string; c
 /** One-line description of how an exercise is loaded, for the exercise library. */
 export function modeSummary(mode: WeightMode): string {
   if (mode.kind === 'bodyweight') return `Bodyweight · ${mode.sets} set${mode.sets === 1 ? '' : 's'}`;
-  if (mode.kind === 'plates') return `Plates ${fmt(mode.plate)} + add-on ${fmt(mode.addon)}`;
+  if (mode.kind === 'plates') {
+    const u = mode.unit === 'lb' ? ' lb' : '';
+    return `Plates ${fmt(mode.plate)}${u} + add-on ${fmt(mode.addon)}${u}`;
+  }
   return `+${fmt(mode.increment)} kg`;
 }
 

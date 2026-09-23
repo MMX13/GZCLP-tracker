@@ -10,6 +10,7 @@ import {
   uid,
 } from '../engine/progression';
 import { variantAt, variantForTrack } from '../engine/rotation';
+import { snapWeight } from '../engine/weights';
 import type { Day, Exercise, SessionItem, Slot, Tier, Track } from '../engine/types';
 import type { Quote } from './quotes';
 import { starterProgram } from './starter';
@@ -28,8 +29,16 @@ export function loadStarter() {
 export function saveExercise(ex: Exercise) {
   update((s) => {
     const i = s.exercises.findIndex((e) => e.id === ex.id);
+    const before = i >= 0 ? s.exercises[i].mode : null;
     if (i >= 0) s.exercises[i] = ex;
     else s.exercises.push(ex);
+    // A new plate setup can make different weights - move programmed weights to the nearest one it can make.
+    if (before && ex.mode.kind === 'plates' && JSON.stringify(before) !== JSON.stringify(ex.mode)) {
+      for (const slot of s.slots) {
+        if (slot.exerciseId !== ex.id) continue;
+        for (const st of Object.values(slot.states)) if (st && st.weight > 0) st.weight = snapWeight(ex.mode, st.weight);
+      }
+    }
   });
 }
 

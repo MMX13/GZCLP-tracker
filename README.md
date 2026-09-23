@@ -89,7 +89,7 @@ The PNG icons in `static/icons/` are rendered from `icon.svg` and `maskable.svg`
 - T3 is 2×8-15 with an AMRAP last set. 15 on the first set and at least 12 on the AMRAP moves the weight up. T3 never prompts or deloads.
 - Moving up is automatic. Moving down always needs confirmation.
 - Each slot, and each track of a main lift, progresses independently. Skipped lifts are left unchanged.
-- Plate machines use every weight their plates and add-ons can make, and step to the next one up.
+- Plate machines use every weight their plates and add-ons can make, and step to the next one up. Plate and add-on sizes can be entered in kg or lb; weights are always worked out and shown in kg (0.1 kg precision for lb machines).
 - Bodyweight exercises have no weight. Every set is AMRAP (set count per exercise, default 3) and each set's target is the reps from that set last time. Beating last time's total counts as moving up. Bodyweight exercises use this scheme at any tier and never prompt or deload.
 
 ## Claude artifact version

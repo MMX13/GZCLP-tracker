@@ -3,9 +3,12 @@ export type Track = 'heavy' | 'volume' | 'none';
 export type Day = 'A' | 'B';
 export type Variant = 'A1' | 'B1' | 'A2' | 'B2';
 
+export type PlateUnit = 'kg' | 'lb';
+
 export type WeightMode =
   | { kind: 'fixed'; increment: number }
-  | { kind: 'plates'; plate: number; addon: number; maxAddons: number }
+  /** Plate and add-on sizes are in `unit` (kg when missing). Weights are always worked out and shown in kg. */
+  | { kind: 'plates'; plate: number; addon: number; maxAddons: number; unit?: PlateUnit }
   /** No load - every set is AMRAP and progress is measured in reps. */
   | { kind: 'bodyweight'; sets: number };
 

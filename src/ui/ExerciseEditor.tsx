@@ -4,8 +4,8 @@ import { useApp } from '../data/store';
 import { uid } from '../engine/progression';
 import { variantForTrack } from '../engine/rotation';
 import { BW_DEFAULT_SETS } from '../engine/schemes';
-import type { Exercise, WeightMode } from '../engine/types';
-import { fmt, plateCombos, round2 } from '../engine/weights';
+import type { Exercise, PlateUnit, WeightMode } from '../engine/types';
+import { fmt, KG_PER_LB, plateCombos, round2 } from '../engine/weights';
 import { formatRest, Icon, NumPad, Sheet, Stepper, Tag } from './components';
 import { modeSummary } from './helpers';
 
@@ -27,7 +27,19 @@ export function ExerciseEditor({ exerciseId, onClose, onSaved }: { exerciseId: s
   const [error, setError] = useState('');
 
   const usedIn = s.slots.filter((x) => x.exerciseId === exerciseId);
-  const preview = useMemo(() => plateCombos(plates.plate, plates.addon, plates.maxAddons).filter((c) => c.weight <= 60), [plates]);
+  const preview = useMemo(
+    () => plateCombos(plates.plate, plates.addon, plates.maxAddons, plates.unit).filter((c) => c.weight <= 60),
+    [plates],
+  );
+  const unit: PlateUnit = plates.unit ?? 'kg';
+  const step = unit === 'lb' ? 0.5 : 0.1;
+  // Switching unit converts the sizes, rounded to the nearest 0.5 lb or 0.1 kg.
+  const setUnit = (next: PlateUnit) => {
+    if (next === unit) return;
+    const conv = (n: number) =>
+      next === 'lb' ? Math.round((n / KG_PER_LB) * 2) / 2 : round2(Math.round(n * KG_PER_LB * 10) / 10);
+    setPlates((p) => ({ ...p, unit: next, plate: conv(p.plate) || step, addon: conv(p.addon) }));
+  };
   const current: WeightMode =
     mode.kind === 'fixed' ? { kind: 'fixed', increment: fixedInc } : mode.kind === 'bodyweight' ? { kind: 'bodyweight', sets: bwSets } : plates;
 
@@ -129,12 +141,22 @@ export function ExerciseEditor({ exerciseId, onClose, onSaved }: { exerciseId: s
             </div>
           ) : (
             <div style={{ marginTop: 12 }}>
-              <div className="label">Plate</div>
+              <div className="label">Plates marked in</div>
+              <div className="stage-chips">
+                {(['kg', 'lb'] as const).map((u) => (
+                  <button key={u} className={unit === u ? 'on' : ''} onClick={() => setUnit(u)}>
+                    {u}
+                  </button>
+                ))}
+              </div>
+              <div className="label" style={{ marginTop: 12 }}>
+                Plate
+              </div>
               <Stepper
                 value={plates.plate}
-                unit="kg"
-                onDec={() => setPlates((p) => ({ ...p, plate: Math.max(0.1, round2(p.plate - 0.1)) }))}
-                onInc={() => setPlates((p) => ({ ...p, plate: round2(p.plate + 0.1) }))}
+                unit={unit}
+                onDec={() => setPlates((p) => ({ ...p, plate: Math.max(step, round2(p.plate - step)) }))}
+                onInc={() => setPlates((p) => ({ ...p, plate: round2(p.plate + step) }))}
                 onTap={() => setPad('plate')}
               />
               <div className="label" style={{ marginTop: 12 }}>
@@ -142,9 +164,9 @@ export function ExerciseEditor({ exerciseId, onClose, onSaved }: { exerciseId: s
               </div>
               <Stepper
                 value={plates.addon}
-                unit="kg"
-                onDec={() => setPlates((p) => ({ ...p, addon: Math.max(0, round2(p.addon - 0.1)) }))}
-                onInc={() => setPlates((p) => ({ ...p, addon: round2(p.addon + 0.1) }))}
+                unit={unit}
+                onDec={() => setPlates((p) => ({ ...p, addon: Math.max(0, round2(p.addon - step)) }))}
+                onInc={() => setPlates((p) => ({ ...p, addon: round2(p.addon + step) }))}
                 onTap={() => setPad('addon')}
               />
               <div className="label" style={{ marginTop: 12 }}>
@@ -158,7 +180,7 @@ export function ExerciseEditor({ exerciseId, onClose, onSaved }: { exerciseId: s
                 ))}
               </div>
               <div className="label" style={{ marginTop: 12 }}>
-                Weights you can make
+                Weights you can make{unit === 'lb' && ', in kg'}
               </div>
               <div className="cd" style={{ fontSize: 15, lineHeight: 1.6 }}>
                 {preview.map((c) => fmt(c.weight)).join('  ·  ')}  …
@@ -204,14 +226,14 @@ export function ExerciseEditor({ exerciseId, onClose, onSaved }: { exerciseId: s
       {pad && (
         <NumPad
           title={pad === 'increment' ? 'Increment' : pad === 'plate' ? 'Plate weight' : 'Add-on weight'}
-          subtitle="kg"
+          subtitle={pad === 'increment' ? 'kg' : unit}
           decimal
           initial={pad === 'increment' ? fixedInc : pad === 'plate' ? plates.plate : plates.addon}
           onClose={() => setPad(null)}
           onDone={(v) => {
             const val = round2(Math.max(0, v));
             if (pad === 'increment') setFixedInc(val || 0.25);
-            else if (pad === 'plate') setPlates((p) => ({ ...p, plate: val || 0.1 }));
+            else if (pad === 'plate') setPlates((p) => ({ ...p, plate: val || step }));
             else setPlates((p) => ({ ...p, addon: val }));
             setPad(null);
           }}

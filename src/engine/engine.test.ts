@@ -372,6 +372,14 @@ test('uneven machines with a big add-on still step correctly', () => {
   assert.equal(nextWeight(m, 15), 20);
 });
 
+test('pound plate machines work in kg, rounded to 0.1', () => {
+  const LB: WeightMode = { kind: 'plates', plate: 10, addon: 5, maxAddons: 1, unit: 'lb' };
+  assert.deepEqual(plateCombos(10, 5, 1, 'lb').slice(0, 5).map((c) => c.weight), [0, 2.3, 4.5, 6.8, 9.1]);
+  assert.equal(nextWeight(LB, 45.4), 47.6);
+  assert.equal(describeSetup(LB, 47.6), '10 plates + 1 add-on');
+  assert.equal(floorWeight(LB, 50), 49.9);
+});
+
 // Estimates
 
 test('Epley estimates', () => {
