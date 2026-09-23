@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { nextQuote } from './data/actions';
 import { loadState } from './data/store';
 import { App } from './ui/App';
 
@@ -39,6 +38,5 @@ function Root() {
 }
 
 loadState().then(() => {
-  nextQuote();
   createRoot(document.getElementById('root')!).render(<Root />);
 });

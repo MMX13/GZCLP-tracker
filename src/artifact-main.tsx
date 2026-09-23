@@ -1,7 +1,6 @@
 /** Entry point for the Claude artifact build - saves to the artifact's database instead of the browser. */
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { nextQuote } from './data/actions';
 import { cloudBackend, type Db } from './data/cloud';
 import { browserBackend, loadState, setExporter } from './data/store';
 import { App } from './ui/App';
@@ -66,7 +65,6 @@ async function start() {
     localOnly = true;
     await loadState(browserBackend);
   }
-  nextQuote();
 
   root.render(
     <>

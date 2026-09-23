@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { nextQuote } from '../data/actions';
 import { getState, useApp } from '../data/store';
 import { ChalkFilter, formatRest, Icon } from './components';
 import { Finish } from './Finish';
@@ -32,10 +31,7 @@ export function App({ updateReady, onUpdate }: { updateReady: boolean; onUpdate:
   const [route, setRoute] = useState<Route>(() => (getState().active ? { name: 'workout' } : { name: 'today' }));
 
   const go = useCallback((name: string, arg?: string) => {
-    setRoute((cur) => {
-      if (name === 'today' && cur.name !== 'today') nextQuote();
-      return { name, arg };
-    });
+    setRoute({ name, arg });
     if (name !== 'today') safeHistory(() => history.pushState({ name, arg }, ''));
     window.scrollTo(0, 0);
   }, []);
@@ -43,11 +39,7 @@ export function App({ updateReady, onUpdate }: { updateReady: boolean; onUpdate:
   useEffect(() => {
     safeHistory(() => history.replaceState({ name: 'root' }, ''));
     const onPop = () => {
-      setRoute((cur) => {
-        if (cur.name === 'settings') return { name: 'program' };
-        if (cur.name !== 'today') nextQuote();
-        return { name: 'today' };
-      });
+      setRoute((cur) => (cur.name === 'settings' ? { name: 'program' } : { name: 'today' }));
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);

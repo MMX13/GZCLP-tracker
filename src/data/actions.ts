@@ -215,6 +215,8 @@ export function finishActive(): string | null {
     s.exercises = r.exercises;
     s.active = null;
     s.nextIndex = (s.nextIndex + 1) % 4;
+    // The quote belongs to the upcoming session, so it only moves on when one is finished.
+    s.quoteCursor += 1;
   });
   return active.id;
 }
