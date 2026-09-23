@@ -3,7 +3,7 @@ import { loadStarter, nextQuote, startSession, exportData } from '../data/action
 import { useApp } from '../data/store';
 import { buildSession } from '../engine/progression';
 import { VARIANTS, variantAt, variantDay } from '../engine/rotation';
-import { schemeLabel } from '../engine/schemes';
+import { itemSchemeLabel } from '../engine/schemes';
 import { fmt } from '../engine/weights';
 import { QuoteBoard, Tag } from './components';
 import { currentQuote, deltaLabel, estimateMinutes, exMap, lastLifted, sinceLabel } from './helpers';
@@ -98,18 +98,21 @@ export function Today({ go }: { go: (to: string) => void }) {
       {preview.items.length > 0 && (
         <div className="group">
           {preview.items.map((it) => {
-            const d = deltaLabel(it.weight, it.slotId ? lastLifted(s.sessions, it.slotId, it.track) : null);
+            const target = it.sets.reduce((n, x) => n + x.target, 0);
+            const d = it.bodyweight
+              ? { text: target > 0 ? 'reps' : 'new', cls: 'mu' }
+              : deltaLabel(it.weight, it.slotId ? lastLifted(s.sessions, it.slotId, it.track) : null);
             return (
               <div className="row" key={it.id}>
                 <Tag tier={it.tier} />
                 <div className="grow name">
                   {it.exerciseName}
                   <span className="mu small" style={{ marginLeft: 6 }}>
-                    {schemeLabel(it.tier, it.track, it.stage)}
+                    {itemSchemeLabel(it)}
                   </span>
                 </div>
                 <div className="w" style={{ minWidth: 44, textAlign: 'right' }}>
-                  {fmt(it.weight)}
+                  {it.bodyweight ? (target > 0 ? target : 'BW') : fmt(it.weight)}
                 </div>
                 <div className={`delta ${d.cls}`}>{d.text}</div>
               </div>

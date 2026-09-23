@@ -3,8 +3,8 @@ import { addSlot, changeSlotExercise, removeSlot, reorderSlots, setSlotState, sw
 import { useApp } from '../data/store';
 import { newState } from '../engine/progression';
 import { variantForTrack } from '../engine/rotation';
-import { schemeLabel, stagesFor, trackLabel } from '../engine/schemes';
-import type { Day, Exercise, Slot, Tier, Track, WeightMode } from '../engine/types';
+import { bodyweightLabel, schemeLabel, stagesFor, trackLabel } from '../engine/schemes';
+import type { Day, Exercise, ProgState, Slot, Tier, Track, WeightMode } from '../engine/types';
 import { describeSetup, fmt, nextWeight, prevWeight, snapWeight } from '../engine/weights';
 import { Icon, NumPad, Sheet, Stepper, Tag } from './components';
 import { ExerciseEditor, ExerciseLibrary } from './ExerciseEditor';
@@ -119,6 +119,14 @@ export function Program({ go }: { go: (to: string) => void }) {
   );
 }
 
+/** Scheme and load for a slot's track, e.g. "3×5 · 60" or "3×AMRAP · 8, 7, 6". */
+function stateLabel(slot: Slot, ex: Exercise | undefined, t: Track, st: ProgState): { scheme: string; load: string } {
+  if (ex?.mode.kind === 'bodyweight') {
+    return { scheme: bodyweightLabel(ex.mode.sets), load: st.reps?.length ? st.reps.join(', ') : 'BW' };
+  }
+  return { scheme: schemeLabel(slot.tier, t, st.stage), load: fmt(st.weight) };
+}
+
 function tracksOf(slot: Slot): Track[] {
   if (slot.tier !== 1) return ['none'];
   const v1 = slot.variant1Track ?? 'heavy';
@@ -139,13 +147,14 @@ function SlotRow({ slot, ex, handle, onOpen }: { slot: Slot; ex: Exercise | unde
           <div className="tracks">
             {tracksOf(slot).map((t) => {
               const st = slot.states[t] ?? newState();
+              const l = stateLabel(slot, ex, t, st);
               return (
                 <div key={t} className={`trk ${st.stage > 0 ? 'dropped' : ''}`}>
                   <div className="l">
                     {variantForTrack(slot, t as 'heavy' | 'volume')} · {trackLabel(t)}
                   </div>
                   <span className="cd" style={{ fontSize: 15 }}>
-                    {schemeLabel(1, t, st.stage)} · {fmt(st.weight)}
+                    {l.scheme} · {l.load}
                   </span>
                   {st.pendingPrompt && <Icon name="alert" size={13} className="accent" style={{ marginLeft: 4, verticalAlign: -2 }} />}
                 </div>
@@ -159,6 +168,8 @@ function SlotRow({ slot, ex, handle, onOpen }: { slot: Slot; ex: Exercise | unde
   }
   const st = slot.states.none ?? newState();
   const setup = ex ? describeSetup(ex.mode, st.weight) : null;
+  const l = stateLabel(slot, ex, 'none', st);
+  const bw = ex?.mode.kind === 'bodyweight';
   return (
     <div className="row tap" onClick={onOpen} role="button">
       {handle}
@@ -166,12 +177,13 @@ function SlotRow({ slot, ex, handle, onOpen }: { slot: Slot; ex: Exercise | unde
       <div className="grow">
         <div className="name">{name}</div>
         <div className="sub">
-          {schemeLabel(slot.tier, 'none', st.stage)}
+          {l.scheme}
+          {bw && st.reps?.length ? ` · last ${st.reps.reduce((a, b) => a + b, 0)} reps` : ''}
           {setup && ` · ${setup}`}
           {st.pendingPrompt && <span className="accent"> · missed last time</span>}
         </div>
       </div>
-      <span className="w">{fmt(st.weight)}</span>
+      <span className="w">{bw ? (st.reps?.length ? st.reps.join(' ') : 'BW') : l.load}</span>
       <Icon name="right" className="mu" />
     </div>
   );
@@ -224,6 +236,20 @@ function SlotSheet({ slot, exercise, onClose }: { slot: Slot; exercise: Exercise
 
         {tracks.map((t) => {
           const st = draft[t];
+          if (mode.kind === 'bodyweight') {
+            const label = slot.tier === 1 ? `${variantForTrack(slot, t as 'heavy' | 'volume')} · ${trackLabel(t)} track` : 'Next session';
+            return (
+              <div key={t} className="box">
+                <div className="label">{label}</div>
+                <div className="cd" style={{ fontSize: 22 }}>
+                  {bodyweightLabel(mode.sets)} · {st.reps?.length ? `beat ${st.reps.join(', ')}` : 'first time'}
+                </div>
+                <div className="mu small" style={{ marginTop: 4 }}>
+                  Bodyweight. Targets are the reps from each set last time.
+                </div>
+              </div>
+            );
+          }
           const stages = stagesFor(slot.tier, t);
           const label = slot.tier === 1 ? `${variantForTrack(slot, t as 'heavy' | 'volume')} · ${trackLabel(t)} track` : 'Next session';
           const setup = describeSetup(mode, st.weight);
@@ -270,7 +296,9 @@ function SlotSheet({ slot, exercise, onClose }: { slot: Slot; exercise: Exercise
             </button>
           </div>
         )}
-        <div className="list-note">Changes here override what the app calculated. The next session uses these values.</div>
+        {mode.kind !== 'bodyweight' && (
+          <div className="list-note">Changes here override what the app calculated. The next session uses these values.</div>
+        )}
         <div className="pad btn-row">
           <button className="btn big danger" onClick={() => setConfirmRemove(true)}>
             Remove

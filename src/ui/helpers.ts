@@ -1,6 +1,7 @@
 import { BUILT_IN_QUOTES, type Quote } from '../data/quotes';
 import type { AppState } from '../data/store';
-import type { Exercise, Session, SessionItem, Track } from '../engine/types';
+import type { Exercise, Session, SessionItem, Track, WeightMode } from '../engine/types';
+import { fmt } from '../engine/weights';
 
 export function activeQuotes(s: AppState): Quote[] {
   const hidden = new Set(s.settings.hiddenQuotes);
@@ -91,4 +92,23 @@ export function deltaLabel(next: number, last: number | null): { text: string; c
   if (d > 0) return { text: `+${d}`, cls: 'accent' };
   if (d < 0) return { text: `${d}`, cls: 'miss' };
   return { text: 'same', cls: 'mu' };
+}
+
+/** One-line description of how an exercise is loaded, for the exercise library. */
+export function modeSummary(mode: WeightMode): string {
+  if (mode.kind === 'bodyweight') return `Bodyweight · ${mode.sets} set${mode.sets === 1 ? '' : 's'}`;
+  if (mode.kind === 'plates') return `Plates ${fmt(mode.plate)} + add-on ${fmt(mode.addon)}`;
+  return `+${fmt(mode.increment)} kg`;
+}
+
+export function modeShort(mode: WeightMode): string {
+  if (mode.kind === 'bodyweight') return 'Bodyweight';
+  if (mode.kind === 'plates') return 'Plates';
+  return `+${fmt(mode.increment)} kg`;
+}
+
+/** Last time's reps per set for a bodyweight item, e.g. "8, 7, 6". Null when there's no history. */
+export function lastRepsLabel(item: SessionItem): string | null {
+  if (!item.sets.some((s) => s.target > 0)) return null;
+  return item.sets.map((s) => s.target).join(', ');
 }

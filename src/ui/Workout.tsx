@@ -10,12 +10,12 @@ import {
   undoSwap,
 } from '../data/actions';
 import { useApp } from '../data/store';
-import { schemeLabel, trackLabel } from '../engine/schemes';
+import { itemSchemeLabel, schemeLabel, totalReps, trackLabel } from '../engine/schemes';
 import type { Exercise, SessionItem, SetLog, WeightMode } from '../engine/types';
 import { describeSetup, fmt, nextWeight, prevWeight, snapWeight } from '../engine/weights';
 import { formatDuration, formatRest, Icon, NumPad, Sheet, Tag, useLongPress } from './components';
 import { ExercisePicker } from './ExercisePicker';
-import { exMap, lastItem } from './helpers';
+import { exMap, lastItem, lastRepsLabel } from './helpers';
 
 const FALLBACK: WeightMode = { kind: 'fixed', increment: 2.5 };
 
@@ -163,9 +163,13 @@ export function Workout({ go }: { go: (to: string, arg?: string) => void }) {
 
       {repsItem && repsSet && reps && (
         <NumPad
-          title={repsSet.amrap ? 'AMRAP reps' : `Set ${reps.index + 1} reps`}
-          subtitle={`${repsItem.exerciseName} · ${fmt(repsItem.weight)} kg · target ${repsSet.amrap ? `${repsSet.target}+` : repsSet.target}`}
-          initial={repsSet.reps ?? (repsSet.amrap ? null : repsSet.target)}
+          title={repsSet.amrap ? (repsItem.bodyweight ? `Set ${reps.index + 1} · AMRAP` : 'AMRAP reps') : `Set ${reps.index + 1} reps`}
+          subtitle={
+            repsItem.bodyweight
+              ? `${repsItem.exerciseName} · ${repsSet.target > 0 ? `last time ${repsSet.target}` : 'first time'}`
+              : `${repsItem.exerciseName} · ${fmt(repsItem.weight)} kg · target ${repsSet.amrap ? `${repsSet.target}+` : repsSet.target}`
+          }
+          initial={repsSet.reps ?? (repsSet.amrap && !(repsItem.bodyweight && repsSet.target > 0) ? null : repsSet.target)}
           onClose={() => setReps(null)}
           onDone={(v) => {
             onLogged(repsItem, reps.index, Math.max(0, Math.round(v)));
@@ -287,11 +291,11 @@ function ExerciseCard({
   onWeightPad: () => void;
 }) {
   const mode = exercise?.mode ?? FALLBACK;
-  const scheme = schemeLabel(item.tier, item.track, item.stage);
+  const scheme = itemSchemeLabel(item);
   const complete = isComplete(item);
   const done = doneCount(item);
   const track = trackLabel(item.track);
-  const sub = [track, scheme, `${fmt(item.weight)} kg`].filter(Boolean).join(' · ');
+  const sub = [track, scheme, item.bodyweight ? 'bodyweight' : `${fmt(item.weight)} kg`].filter(Boolean).join(' · ');
   const setup = describeSetup(mode, item.weight);
   const showPrompt = open && item.prompt && !item.promptAnswer;
 
@@ -339,34 +343,69 @@ function ExerciseCard({
       {open && !item.skipped && (
         <div className="card-body">
           {showPrompt && item.prompt && <PromptBox item={item} />}
-          <div className="big-w">
-            <button onClick={onWeightPad} aria-label="Type weight">
-              <span className="num">{fmt(item.weight)}</span>
-              <span className="unit"> kg</span>
-            </button>
-            <div className="btn-row" style={{ flex: 'none' }}>
-              <button className="step" aria-label="Lighter" onClick={() => setItemWeight(item.id, prevWeight(mode, item.weight))}>
-                −
-              </button>
-              <button className="step" aria-label="Heavier" onClick={() => setItemWeight(item.id, nextWeight(mode, item.weight))}>
-                +
-              </button>
-            </div>
-          </div>
-          <div className="mu small" style={{ marginTop: 4 }}>
-            {setup && <span style={{ color: 'var(--text)' }}>{setup} · </span>}
-            {item.weight !== item.plannedWeight && <span className="accent">planned {fmt(item.plannedWeight)} · </span>}
-            {last ? `Last time ${fmt(last.weight)} kg · ${last.sets.map((x) => x.reps ?? '–').join(', ')}` : 'First time on this lift'}
-          </div>
+          {item.bodyweight ? (
+            <BodyweightSummary item={item} />
+          ) : (
+            <>
+              <div className="big-w">
+                <button onClick={onWeightPad} aria-label="Type weight">
+                  <span className="num">{fmt(item.weight)}</span>
+                  <span className="unit"> kg</span>
+                </button>
+                <div className="btn-row" style={{ flex: 'none' }}>
+                  <button className="step" aria-label="Lighter" onClick={() => setItemWeight(item.id, prevWeight(mode, item.weight))}>
+                    −
+                  </button>
+                  <button className="step" aria-label="Heavier" onClick={() => setItemWeight(item.id, nextWeight(mode, item.weight))}>
+                    +
+                  </button>
+                </div>
+              </div>
+              <div className="mu small" style={{ marginTop: 4 }}>
+                {setup && <span style={{ color: 'var(--text)' }}>{setup} · </span>}
+                {item.weight !== item.plannedWeight && <span className="accent">planned {fmt(item.plannedWeight)} · </span>}
+                {last ? `Last time ${fmt(last.weight)} kg · ${last.sets.map((x) => x.reps ?? '–').join(', ')}` : 'First time on this lift'}
+              </div>
+            </>
+          )}
           <div className="sets">
             {item.sets.map((set, i) => (
               <SetButton key={i} set={set} onLog={(v) => onLog(i, v)} onPad={() => onRepsPad(i)} />
             ))}
           </div>
-          <div className="hint">Tap to log as planned · hold or tap again to enter reps</div>
+          <div className="hint">{item.bodyweight ? 'Tap a set to enter reps' : 'Tap to log as planned · hold or tap again to enter reps'}</div>
         </div>
       )}
     </div>
+  );
+}
+
+function BodyweightSummary({ item }: { item: SessionItem }) {
+  const target = item.sets.reduce((n, x) => n + x.target, 0);
+  const lastReps = lastRepsLabel(item);
+  const today = totalReps(item.sets);
+  return (
+    <>
+      <div className="big-w">
+        <div>
+          <span className="num">{today}</span>
+          <span className="unit"> reps</span>
+        </div>
+        {target > 0 && (
+          <div className="mu small" style={{ textAlign: 'right' }}>
+            to beat
+            <div className={`cd ${today > target ? 'accent' : ''}`} style={{ fontSize: 22 }}>
+              {target}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="mu small" style={{ marginTop: 4 }}>
+        {lastReps
+          ? `Last time ${lastReps} · beat it on any set`
+          : 'First time on this exercise · every set is as many as you can'}
+      </div>
+    </>
   );
 }
 
@@ -379,7 +418,7 @@ function SetButton({ set, onLog, onPad }: { set: SetLog; onLog: (v: number | nul
   });
   return (
     <button className={`set ${done ? (short ? 'short' : 'done') : ''}`} {...press} aria-label={done ? `${set.reps} reps logged` : `Log ${set.target} reps`}>
-      {done ? set.reps : set.amrap ? `${set.target}+` : set.target}
+      {done ? set.reps : set.amrap ? (set.target > 0 ? `${set.target}+` : 'max') : set.target}
       <small>{done ? 'reps' : set.amrap ? 'AMRAP' : 'tap'}</small>
     </button>
   );

@@ -1,4 +1,4 @@
-import { buildSets, stageCount, T3_AMRAP, T3_FIRST } from './schemes';
+import { bodyweightSets, buildSets, stageCount, T3_AMRAP, T3_FIRST, totalReps } from './schemes';
 import { slotsForDay, trackFor, variantDay } from './rotation';
 import { deloadWeight, nextWeight } from './weights';
 import type {
@@ -84,6 +84,36 @@ export function uid(prefix = ''): string {
   return `${prefix}${Date.now().toString(36)}${idCounter.toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 }
 
+/** A fresh session item for an exercise at the given tier, track and progression state. */
+export function newItem(
+  exercise: Exercise,
+  tier: Tier,
+  track: Track,
+  state: Pick<ProgState, 'weight' | 'stage' | 'reps'>,
+  slotId: string | null,
+): SessionItem {
+  const bw = exercise.mode.kind === 'bodyweight';
+  const item: SessionItem = {
+    id: uid('i'),
+    slotId,
+    exerciseId: exercise.id,
+    exerciseName: exercise.name,
+    tier,
+    track,
+    stage: bw ? 0 : state.stage,
+    weight: bw ? 0 : state.weight,
+    plannedWeight: bw ? 0 : state.weight,
+    sets:
+      exercise.mode.kind === 'bodyweight'
+        ? bodyweightSets(exercise.mode.sets, state.reps)
+        : buildSets(tier, track, state.stage),
+    skipped: false,
+    swapped: false,
+  };
+  if (bw) item.bodyweight = true;
+  return item;
+}
+
 /** Build a session item from a program slot. */
 export function itemFromSlot(
   slot: Slot,
@@ -92,21 +122,10 @@ export function itemFromSlot(
   deloadPct: number,
 ): SessionItem {
   const track = trackFor(slot, variant);
-  const state = slot.states[track] ?? newState(exercise.lastWeights[lastWeightKey(slot.tier, track)] ?? 0);
-  const item: SessionItem = {
-    id: uid('i'),
-    slotId: slot.id,
-    exerciseId: exercise.id,
-    exerciseName: exercise.name,
-    tier: slot.tier,
-    track,
-    stage: state.stage,
-    weight: state.weight,
-    plannedWeight: state.weight,
-    sets: buildSets(slot.tier, track, state.stage),
-    skipped: false,
-    swapped: false,
-  };
+  const key = lastWeightKey(slot.tier, track);
+  const state = slot.states[track] ?? { ...newState(exercise.lastWeights[key] ?? 0), reps: exercise.lastReps?.[key] };
+  const item = newItem(exercise, slot.tier, track, state, slot.id);
+  if (item.bodyweight) return item;
   const prompt = promptFor(state, slot.tier, track, exercise.mode, deloadPct);
   if (prompt) item.prompt = prompt;
   return item;
@@ -165,6 +184,22 @@ export interface ItemResult {
 }
 
 /**
+ * Bodyweight progress is measured in reps. Beating last time's total is an improvement, and
+ * there are no stages, failure prompts or deloads. Each set's reps become next time's targets.
+ */
+function bodyweightResult(item: SessionItem): ItemResult {
+  const reps = item.sets.map((s) => s.reps ?? 0);
+  const total = totalReps(item.sets);
+  const before = item.sets.reduce((n, s) => n + s.target, 0);
+  return {
+    outcome: before > 0 && total > before ? 'up' : 'same',
+    nextWeight: 0,
+    nextStage: 0,
+    state: { weight: 0, stage: 0, lastResult: total >= before ? 'success' : 'fail', pendingPrompt: false, lastMissed: 0, reps },
+  };
+}
+
+/**
  * Work out what happens to a slot after a session.
  * Success moves the weight up. Failure keeps weight and stage and flags a prompt for next time.
  * A skipped or unlogged item leaves the slot untouched.
@@ -179,6 +214,7 @@ export function resultFor(item: SessionItem, prev: ProgState | undefined, mode: 
       state: null,
     };
   }
+  if (item.bodyweight) return bodyweightResult(item);
   if (result === 'success') {
     const w = nextWeight(mode, item.weight);
     return {
@@ -224,7 +260,9 @@ export function finishSession(
   now = Date.now(),
 ): FinishResult {
   const slotMap = new Map(slots.map((s) => [s.id, { ...s, states: { ...s.states } }]));
-  const exMap = new Map(exercises.map((e) => [e.id, { ...e, lastWeights: { ...e.lastWeights } }]));
+  const exMap = new Map(
+    exercises.map((e) => [e.id, { ...e, lastWeights: { ...e.lastWeights }, ...(e.lastReps && { lastReps: { ...e.lastReps } }) }]),
+  );
 
   const items = session.items.map((item) => {
     const ex = exMap.get(item.exerciseId);
@@ -233,7 +271,9 @@ export function finishSession(
     const prev = slot?.states[item.track];
     const r = resultFor(item, item.swapped ? undefined : prev, mode);
 
-    if (r.state && ex) ex.lastWeights[lastWeightKey(item.tier, item.track)] = item.weight;
+    const key = lastWeightKey(item.tier, item.track);
+    if (r.state && ex && item.bodyweight) ex.lastReps = { ...ex.lastReps, [key]: r.state.reps ?? [] };
+    else if (r.state && ex) ex.lastWeights[key] = item.weight;
     if (r.state && slot && !item.swapped) slot.states[item.track] = r.state;
 
     return { ...item, outcome: r.outcome, nextWeight: r.nextWeight, nextStage: r.nextStage };

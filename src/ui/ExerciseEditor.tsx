@@ -3,9 +3,11 @@ import { deleteExercise, saveExercise } from '../data/actions';
 import { useApp } from '../data/store';
 import { uid } from '../engine/progression';
 import { variantForTrack } from '../engine/rotation';
+import { BW_DEFAULT_SETS } from '../engine/schemes';
 import type { Exercise, WeightMode } from '../engine/types';
 import { fmt, plateCombos, round2 } from '../engine/weights';
 import { formatRest, Icon, NumPad, Sheet, Stepper, Tag } from './components';
+import { modeSummary } from './helpers';
 
 type Field = 'increment' | 'plate' | 'addon' | null;
 
@@ -18,6 +20,7 @@ export function ExerciseEditor({ exerciseId, onClose, onSaved }: { exerciseId: s
   const [plates, setPlates] = useState(
     existing?.mode.kind === 'plates' ? existing.mode : { kind: 'plates' as const, plate: 4.5, addon: 2.3, maxAddons: 2 },
   );
+  const [bwSets, setBwSets] = useState(existing?.mode.kind === 'bodyweight' ? existing.mode.sets : BW_DEFAULT_SETS);
   const [rest, setRest] = useState(existing?.rest ?? s.settings.defaultRest);
   const [pad, setPad] = useState<Field>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -25,7 +28,8 @@ export function ExerciseEditor({ exerciseId, onClose, onSaved }: { exerciseId: s
 
   const usedIn = s.slots.filter((x) => x.exerciseId === exerciseId);
   const preview = useMemo(() => plateCombos(plates.plate, plates.addon, plates.maxAddons).filter((c) => c.weight <= 60), [plates]);
-  const current: WeightMode = mode.kind === 'fixed' ? { kind: 'fixed', increment: fixedInc } : plates;
+  const current: WeightMode =
+    mode.kind === 'fixed' ? { kind: 'fixed', increment: fixedInc } : mode.kind === 'bodyweight' ? { kind: 'bodyweight', sets: bwSets } : plates;
 
   const save = () => {
     const trimmed = name.trim();
@@ -89,9 +93,27 @@ export function ExerciseEditor({ exerciseId, onClose, onSaved }: { exerciseId: s
             <button className={mode.kind === 'plates' ? 'on' : ''} onClick={() => setMode(plates)}>
               Plates + add-ons
             </button>
+            <button className={mode.kind === 'bodyweight' ? 'on' : ''} onClick={() => setMode({ kind: 'bodyweight', sets: bwSets })}>
+              Bodyweight
+            </button>
           </div>
 
-          {mode.kind === 'fixed' ? (
+          {mode.kind === 'bodyweight' ? (
+            <div style={{ marginTop: 12 }}>
+              <div className="label">Sets</div>
+              <div className="stage-chips">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button key={n} className={bwSets === n ? 'on' : ''} onClick={() => setBwSets(n)}>
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <div className="mu small" style={{ marginTop: 8 }}>
+                Every set is as many reps as possible. Each set's target is what you did on it last time, and beating last
+                time's total counts as progress.
+              </div>
+            </div>
+          ) : mode.kind === 'fixed' ? (
             <div style={{ marginTop: 12 }}>
               <div className="label">Increment</div>
               <Stepper
@@ -250,9 +272,7 @@ export function ExerciseLibrary({ onClose }: { onClose: () => void }) {
                 <div className="grow">
                   <div className="name">{e.name}</div>
                   <div className="sub">
-                    {e.mode.kind === 'plates'
-                      ? `Plates ${fmt(e.mode.plate)} + add-on ${fmt(e.mode.addon)}`
-                      : `+${fmt(e.mode.increment)} kg`}{' '}
+                    {modeSummary(e.mode)}{' '}
                     · rest {formatRest(e.rest)} · {n ? `in program ×${n}` : 'not in program'}
                   </div>
                 </div>

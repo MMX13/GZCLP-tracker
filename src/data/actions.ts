@@ -4,12 +4,12 @@ import {
   finishSession,
   itemFromSlot,
   lastWeightKey,
+  newItem,
   newState,
   setItemStage,
   uid,
 } from '../engine/progression';
 import { variantAt, variantForTrack } from '../engine/rotation';
-import { buildSets } from '../engine/schemes';
 import type { Day, Exercise, SessionItem, Slot, Tier, Track } from '../engine/types';
 import type { Quote } from './quotes';
 import { starterProgram } from './starter';
@@ -41,8 +41,12 @@ export function deleteExercise(id: string) {
 }
 
 function statesFor(tier: Tier, ex: Exercise | undefined): Slot['states'] {
-  const w = (t: Track) => ex?.lastWeights[lastWeightKey(tier, t)] ?? 0;
-  return tier === 1 ? { heavy: newState(w('heavy')), volume: newState(w('volume')) } : { none: newState(w('none')) };
+  const st = (t: Track) => {
+    const key = lastWeightKey(tier, t);
+    const reps = ex?.lastReps?.[key];
+    return { ...newState(ex?.lastWeights[key] ?? 0), ...(reps && { reps }) };
+  };
+  return tier === 1 ? { heavy: st('heavy'), volume: st('volume') } : { none: st('none') };
 }
 
 export function addSlot(day: Day, tier: Tier, exerciseId: string): string {
@@ -170,20 +174,11 @@ export function swapItem(itemId: string, exerciseId: string) {
   withItem(itemId, (item, s) => {
     const ex = s.exercises.find((e) => e.id === exerciseId);
     if (!ex) return item;
-    const weight = ex.lastWeights[lastWeightKey(item.tier, item.track)] ?? 0;
+    const key = lastWeightKey(item.tier, item.track);
+    const state = { weight: ex.lastWeights[key] ?? 0, stage: 0, reps: ex.lastReps?.[key] };
     return {
-      id: uid('i'),
-      slotId: null,
+      ...newItem(ex, item.tier, item.track, state, null),
       replacedSlotId: item.replacedSlotId ?? item.slotId ?? undefined,
-      exerciseId: ex.id,
-      exerciseName: ex.name,
-      tier: item.tier,
-      track: item.track,
-      stage: 0,
-      weight,
-      plannedWeight: weight,
-      sets: buildSets(item.tier, item.track, 0),
-      skipped: false,
       swapped: true,
     };
   });

@@ -5,11 +5,12 @@ import {
   buildSession,
   evaluate,
   finishSession,
+  newItem,
   newState,
   promptFor,
 } from './progression';
 import { describeSetup, deloadWeight, floorWeight, nextWeight, plateCombos, prevWeight } from './weights';
-import { buildSets, schemeLabel } from './schemes';
+import { buildSets, itemSchemeLabel, schemeLabel } from './schemes';
 import { trackFor, variantAt } from './rotation';
 import { e1rm, e5rm } from './estimates';
 import type { Exercise, Session, SessionItem, Slot, WeightMode } from './types';
@@ -241,6 +242,85 @@ test('the same exercise in two slots progresses independently', () => {
   const r = finishSession(s, all, exercises);
   assert.equal(r.slots.find((x) => x.id === 'sq')!.states.heavy!.weight, 102.5);
   assert.equal(r.slots.find((x) => x.id === 'sq2')!.states.none!.weight, 70);
+});
+
+// Bodyweight
+
+const BW: WeightMode = { kind: 'bodyweight', sets: 3 };
+
+function bwProgram(reps?: number[]) {
+  const { exercises, slots } = program();
+  const pullups = ex('pullups', BW);
+  const slot: Slot = { id: 'pu', day: 'A', tier: 3, exerciseId: 'pullups', order: 2, states: { none: { ...newState(), ...(reps && { reps }) } } };
+  return { exercises: [...exercises, pullups], slots: [...slots, slot] };
+}
+
+test('bodyweight sets are all AMRAP, targeting last time per set', () => {
+  const { slots, exercises } = bwProgram([8, 7, 6]);
+  const it = item(buildSession('A1', slots, exercises, 85), 'pu');
+  assert.equal(it.bodyweight, true);
+  assert.equal(it.weight, 0);
+  assert.deepEqual(it.sets.map((x) => [x.target, x.amrap]), [[8, true], [7, true], [6, true]]);
+  assert.equal(itemSchemeLabel(it), '3×AMRAP');
+});
+
+test('bodyweight with no history starts with open targets', () => {
+  const { slots, exercises } = bwProgram();
+  const it = item(buildSession('A1', slots, exercises, 85), 'pu');
+  assert.deepEqual(it.sets.map((x) => x.target), [0, 0, 0]);
+});
+
+test('beating last total moves bodyweight up and the reps become next targets', () => {
+  const { slots, exercises } = bwProgram([8, 7, 6]);
+  let s = buildSession('A1', slots, exercises, 85);
+  s = withItem(s, 'pu', (i) => logAll(i, [9, 7, 6]));
+  const r = finishSession(s, slots, exercises);
+  assert.equal(item(r.session, 'pu').outcome, 'up');
+  const st = r.slots.find((x) => x.id === 'pu')!.states.none!;
+  assert.deepEqual(st.reps, [9, 7, 6]);
+  assert.equal(st.pendingPrompt, false);
+  assert.deepEqual(r.exercises.find((e) => e.id === 'pullups')!.lastReps!['3:none'], [9, 7, 6]);
+  assert.equal(r.exercises.find((e) => e.id === 'pullups')!.lastWeights['3:none'], undefined);
+  const next = item(buildSession('A1', r.slots, r.exercises, 85), 'pu');
+  assert.deepEqual(next.sets.map((x) => x.target), [9, 7, 6]);
+});
+
+test('bodyweight never prompts or deloads when reps drop', () => {
+  const { slots, exercises } = bwProgram([8, 7, 6]);
+  let s = buildSession('A1', slots, exercises, 85);
+  s = withItem(s, 'pu', (i) => logAll(i, [6, 5, 4]));
+  const r = finishSession(s, slots, exercises);
+  assert.equal(item(r.session, 'pu').outcome, 'same');
+  const st = r.slots.find((x) => x.id === 'pu')!.states.none!;
+  assert.equal(st.pendingPrompt, false);
+  assert.deepEqual(st.reps, [6, 5, 4]);
+  assert.equal(item(buildSession('A1', r.slots, r.exercises, 85), 'pu').prompt, undefined);
+});
+
+test('bodyweight unlogged sets count as zero, fully unlogged is skipped', () => {
+  const { slots, exercises } = bwProgram([8, 7, 6]);
+  let s = buildSession('A1', slots, exercises, 85);
+  s = withItem(s, 'pu', (i) => ({ ...i, sets: i.sets.map((x, n) => (n === 0 ? { ...x, reps: 10 } : x)) }));
+  let r = finishSession(s, slots, exercises);
+  assert.deepEqual(r.slots.find((x) => x.id === 'pu')!.states.none!.reps, [10, 0, 0]);
+  r = finishSession(buildSession('A1', slots, exercises, 85), slots, exercises);
+  assert.equal(item(r.session, 'pu').outcome, 'skipped');
+  assert.deepEqual(r.slots.find((x) => x.id === 'pu')!.states.none!.reps, [8, 7, 6]);
+});
+
+test('a swapped-in bodyweight exercise uses its remembered reps', () => {
+  const pullups: Exercise = { ...ex('pullups', { kind: 'bodyweight', sets: 2 }), lastReps: { '2:none': [12, 10] } };
+  const it = newItem(pullups, 2, 'none', { weight: 50, stage: 1, reps: pullups.lastReps!['2:none'] }, null);
+  assert.equal(it.weight, 0);
+  assert.equal(it.stage, 0);
+  assert.deepEqual(it.sets.map((x) => x.target), [12, 10]);
+});
+
+test('bodyweight has no weight to step', () => {
+  assert.equal(nextWeight(BW, 0), 0);
+  assert.equal(prevWeight(BW, 0), 0);
+  assert.equal(deloadWeight(BW, 50, 85), 0);
+  assert.equal(describeSetup(BW, 0), null);
 });
 
 // Weights

@@ -5,7 +5,9 @@ export type Variant = 'A1' | 'B1' | 'A2' | 'B2';
 
 export type WeightMode =
   | { kind: 'fixed'; increment: number }
-  | { kind: 'plates'; plate: number; addon: number; maxAddons: number };
+  | { kind: 'plates'; plate: number; addon: number; maxAddons: number }
+  /** No load - every set is AMRAP and progress is measured in reps. */
+  | { kind: 'bodyweight'; sets: number };
 
 export interface Exercise {
   id: string;
@@ -15,6 +17,8 @@ export interface Exercise {
   rest: number;
   /** Last completed weight keyed by `${tier}:${track}`. */
   lastWeights: Record<string, number>;
+  /** Bodyweight only - reps per set from the last time, keyed like `lastWeights`. */
+  lastReps?: Record<string, number[]>;
 }
 
 export interface ProgState {
@@ -24,6 +28,8 @@ export interface ProgState {
   /** Set after a failure. Cleared once the lifter has answered the prompt or trained the slot again. */
   pendingPrompt: boolean;
   lastMissed: number;
+  /** Bodyweight only - reps per set last time. These become the next session's targets. */
+  reps?: number[];
 }
 
 export interface Slot {
@@ -72,6 +78,8 @@ export interface SessionItem {
   sets: SetLog[];
   skipped: boolean;
   swapped: boolean;
+  /** Bodyweight exercise - weight is ignored, every set is AMRAP and targets are last time's reps. */
+  bodyweight?: boolean;
   prompt?: Prompt;
   promptAnswer?: 'accepted' | 'stayed';
   /** Filled in when the session finishes. */

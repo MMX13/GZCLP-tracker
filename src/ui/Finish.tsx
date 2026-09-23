@@ -1,7 +1,7 @@
 import { useApp } from '../data/store';
 import { bestSet } from '../engine/estimates';
 import { variantAt } from '../engine/rotation';
-import { schemeLabel } from '../engine/schemes';
+import { itemSchemeLabel, schemeLabel, totalReps } from '../engine/schemes';
 import { fmt } from '../engine/weights';
 import { Chalk, formatDuration, Tag } from './components';
 
@@ -70,10 +70,15 @@ export function Finish({ sessionId, go }: { sessionId: string; go: (to: string) 
       <div className="sec">Next time</div>
       <div className="group">
         {session.items.map((it) => {
-          const diff = it.nextWeight != null ? Math.round((it.nextWeight - it.weight) * 100) / 100 : 0;
+          const total = totalReps(it.sets);
+          const diff = it.bodyweight
+            ? total - it.sets.reduce((n, x) => n + x.target, 0)
+            : it.nextWeight != null
+              ? Math.round((it.nextWeight - it.weight) * 100) / 100
+              : 0;
           const label =
             it.outcome === 'up'
-              ? { t: `+${fmt(diff)}`, c: 'accent' }
+              ? { t: `+${fmt(diff)}${it.bodyweight ? (diff === 1 ? ' rep' : ' reps') : ''}`, c: 'accent' }
               : it.outcome === 'missed'
                 ? { t: 'missed', c: 'miss' }
                 : it.outcome === 'skipped'
@@ -85,10 +90,14 @@ export function Finish({ sessionId, go }: { sessionId: string; go: (to: string) 
               <div className="grow name">
                 {it.exerciseName}{' '}
                 <span className="mu small">
-                  {it.swapped ? 'swapped in' : schemeLabel(it.tier, it.track, it.nextStage ?? it.stage)}
+                  {it.swapped
+                    ? 'swapped in'
+                    : it.bodyweight
+                      ? itemSchemeLabel(it)
+                      : schemeLabel(it.tier, it.track, it.nextStage ?? it.stage)}
                 </span>
               </div>
-              <span className="w">{fmt(it.nextWeight ?? it.weight)}</span>
+              <span className="w">{it.bodyweight ? (it.outcome === 'skipped' ? '–' : total) : fmt(it.nextWeight ?? it.weight)}</span>
               <span className={`delta ${label.c}`} style={{ minWidth: 52 }}>
                 {label.t}
               </span>

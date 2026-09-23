@@ -90,6 +90,7 @@ The PNG icons in `static/icons/` are rendered from `icon.svg` and `maskable.svg`
 - Moving up is automatic. Moving down always needs confirmation.
 - Each slot, and each track of a main lift, progresses independently. Skipped lifts are left unchanged.
 - Plate machines use every weight their plates and add-ons can make, and step to the next one up.
+- Bodyweight exercises have no weight. Every set is AMRAP (set count per exercise, default 3) and each set's target is the reps from that set last time. Beating last time's total counts as moving up. Bodyweight exercises use this scheme at any tier and never prompt or deload.
 
 ## Claude artifact version
 

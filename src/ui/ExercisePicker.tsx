@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../data/store';
 import { Icon, Sheet } from './components';
+import { modeShort } from './helpers';
 
 export function ExercisePicker({
   title,
@@ -33,7 +34,7 @@ export function ExercisePicker({
         {list.map((e) => (
           <button key={e.id} className="row tap" style={{ width: '100%', textAlign: 'left' }} onClick={() => onPick(e.id)}>
             <div className="grow name">{e.name}</div>
-            <span className="mu small">{e.mode.kind === 'plates' ? 'Plates' : `+${e.mode.increment} kg`}</span>
+            <span className="mu small">{modeShort(e.mode)}</span>
           </button>
         ))}
         {list.length === 0 && <div className="row mu small">No exercises match.</div>}

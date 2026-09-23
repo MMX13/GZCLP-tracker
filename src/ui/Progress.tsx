@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useApp } from '../data/store';
 import { bestSet, e5rm } from '../engine/estimates';
-import { schemeLabel } from '../engine/schemes';
+import { itemSchemeLabel, totalReps } from '../engine/schemes';
 import type { Tier } from '../engine/types';
 import { fmt } from '../engine/weights';
 import { Tag } from './components';
@@ -37,6 +37,7 @@ export function Progress() {
   const [exId, setExId] = useState<string | null>(null);
   const [range, setRange] = useState<(typeof RANGES)[number]['key']>('3M');
   const selected = used.find((e) => e.id === exId) ?? used[0];
+  const bw = selected?.mode.kind === 'bodyweight';
 
   const all: Point[] = useMemo(() => {
     if (!selected) return [];
@@ -44,14 +45,16 @@ export function Progress() {
     for (const x of s.sessions)
       for (const i of x.items) {
         if (i.exerciseId !== selected.id || i.outcome === 'skipped') continue;
-        const b = bestSet(i.sets, i.weight);
+        // Bodyweight sessions plot total reps in place of weight, with no 1RM estimate.
+        const b = i.bodyweight ? null : bestSet(i.sets, i.weight);
+        const topReps = Math.max(0, ...i.sets.map((z) => z.reps ?? 0));
         pts.push({
           t: x.start,
           tier: i.tier,
-          weight: i.weight,
+          weight: i.bodyweight ? totalReps(i.sets) : i.weight,
           e1: b?.e1 ?? 0,
-          best: b ? { weight: b.weight, reps: b.reps } : null,
-          scheme: schemeLabel(i.tier, i.track, i.stage),
+          best: b ? { weight: b.weight, reps: b.reps } : i.bodyweight ? { weight: 0, reps: topReps } : null,
+          scheme: itemSchemeLabel(i),
           id: i.id,
         });
       }
@@ -98,6 +101,7 @@ export function Progress() {
         </div>
       </div>
 
+      {bw ? <RepStats pts={pts} /> : (
       <div className="stats">
         <div className="stat">
           <div className="label">Est. 1RM</div>
@@ -121,6 +125,7 @@ export function Progress() {
           <div className="small mu">{top?.best ? `× ${top.best.reps} reps` : ' '}</div>
         </div>
       </div>
+      )}
 
       <div className="chart-wrap">
         <Chart pts={pts} />
@@ -133,15 +138,15 @@ export function Progress() {
                   <line x1="0" y1="4" x2="18" y2="4" stroke={TIER_COLOUR[t]} strokeWidth="2" />
                   <circle cx="9" cy="4" r="3" fill={TIER_COLOUR[t]} />
                 </svg>
-                T{t} weight
+                T{t} {bw ? 'total reps' : 'weight'}
               </span>
             ))}
-          <span>
+          {!bw && <span>
             <svg width="10" height="10" aria-hidden="true">
               <circle cx="5" cy="5" r="3.5" fill="none" stroke="#ece7dd" strokeWidth="1.5" />
             </svg>
             Best est. 1RM per week
-          </span>
+          </span>}
         </div>
       </div>
 
@@ -168,12 +173,41 @@ export function Progress() {
                   {fmt(p.weight)}
                 </span>
                 <span className="cd mu" style={{ fontSize: 14, minWidth: 52, textAlign: 'right' }}>
-                  e1 {Math.round(p.e1)}
+                  {bw ? 'reps' : `e1 ${Math.round(p.e1)}`}
                 </span>
               </div>
             ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function RepStats({ pts }: { pts: Point[] }) {
+  const best = pts.reduce<Point | null>((m, p) => (!m || p.weight > m.weight ? p : m), null);
+  const first = pts[0]?.weight ?? 0;
+  const gain = best ? best.weight - first : 0;
+  const topSet = pts.reduce((m, p) => Math.max(m, p.best?.reps ?? 0), 0);
+  return (
+    <div className="stats">
+      <div className="stat">
+        <div className="label">Best total</div>
+        <div className="val">
+          {best ? best.weight : '–'}
+          <span className="mu" style={{ fontSize: 15 }}> reps</span>
+        </div>
+        <div className={`small ${gain > 0 ? 'accent' : 'mu'}`}>{gain > 0 ? `+${gain} rep${gain === 1 ? '' : 's'}` : 'no change'}</div>
+      </div>
+      <div className="stat">
+        <div className="label">Best set</div>
+        <div className="val">{topSet || '–'}</div>
+        <div className="small mu">{topSet ? 'reps' : ' '}</div>
+      </div>
+      <div className="stat">
+        <div className="label">Sessions</div>
+        <div className="val">{pts.length}</div>
+        <div className="small mu"> </div>
+      </div>
     </div>
   );
 }
@@ -237,7 +271,7 @@ function Chart({ pts }: { pts: Point[] }) {
   if (months.length === 0) months.push({ t: tMin, label: new Date(tMin).toLocaleString(undefined, { month: 'short' }) });
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Working weight by tier and best estimated 1RM per week">
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Working weight or total reps by tier, and best estimated 1RM per week">
       {niceTicks(lo, hi).map((v) => (
         <g key={v}>
           <line x1={x0} x2={x1} y1={Y(v)} y2={Y(v)} stroke="#34322e" strokeWidth="1" />

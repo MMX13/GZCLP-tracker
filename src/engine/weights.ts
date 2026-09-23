@@ -60,6 +60,7 @@ export function weightList(mode: WeightMode): number[] | null {
 
 /** The next weight up from `w`. */
 export function nextWeight(mode: WeightMode, w: number): number {
+  if (mode.kind === 'bodyweight') return 0;
   if (mode.kind === 'fixed') {
     return round2(w + (mode.increment > 0 ? mode.increment : 0));
   }
@@ -70,6 +71,7 @@ export function nextWeight(mode: WeightMode, w: number): number {
 
 /** The next weight down from `w`, never below zero. */
 export function prevWeight(mode: WeightMode, w: number): number {
+  if (mode.kind === 'bodyweight') return 0;
   if (mode.kind === 'fixed') {
     return Math.max(0, round2(w - (mode.increment > 0 ? mode.increment : 0)));
   }
@@ -84,7 +86,7 @@ export function prevWeight(mode: WeightMode, w: number): number {
 
 /** The heaviest achievable weight at or below `target`. */
 export function floorWeight(mode: WeightMode, target: number): number {
-  if (target <= 0) return 0;
+  if (target <= 0 || mode.kind === 'bodyweight') return 0;
   if (mode.kind === 'fixed') {
     const inc = mode.increment;
     if (!(inc > 0)) return round2(target);
@@ -101,6 +103,7 @@ export function floorWeight(mode: WeightMode, target: number): number {
 
 /** The achievable weight closest to `w`. Used when a typed weight needs to snap to a machine. */
 export function snapWeight(mode: WeightMode, w: number): number {
+  if (mode.kind === 'bodyweight') return 0;
   if (mode.kind === 'fixed') return round2(Math.max(0, w));
   const list = weightList(mode)!;
   let best = list[0] ?? 0;

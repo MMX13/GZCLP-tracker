@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../data/store';
 import { VARIANTS } from '../engine/rotation';
-import { schemeLabel } from '../engine/schemes';
+import { itemSchemeLabel, totalReps } from '../engine/schemes';
 import type { Session, SessionItem, Variant } from '../engine/types';
 import { fmt } from '../engine/weights';
 import { formatDuration, Icon, Tag } from './components';
@@ -98,7 +98,7 @@ function SessionCard({ session, open, highlight, onToggle }: { session: Session;
         </div>
         <div className="dots" aria-hidden="true">
           {session.items.map((i) => (
-            <span key={i.id} className={i.outcome === 'skipped' ? 's' : i.outcome === 'missed' || (i.outcome === 'same' && i.tier === 3) ? 'x' : ''} />
+            <span key={i.id} className={i.outcome === 'skipped' ? 's' : missed(i) ? 'x' : ''} />
           ))}
         </div>
         <Icon name={open ? 'up' : 'down'} className="mu" />
@@ -112,6 +112,13 @@ function SessionCard({ session, open, highlight, onToggle }: { session: Session;
       )}
     </div>
   );
+}
+
+/** Missed reps, or for bodyweight fewer total reps than last time. */
+function missed(i: SessionItem): boolean {
+  if (i.outcome === 'missed') return true;
+  if (i.outcome !== 'same') return false;
+  return i.bodyweight ? totalReps(i.sets) < i.sets.reduce((n, x) => n + x.target, 0) : i.tier === 3;
 }
 
 function ItemRow({ item, highlight }: { item: SessionItem; highlight: string }) {
@@ -130,12 +137,13 @@ function ItemRow({ item, highlight }: { item: SessionItem; highlight: string }) 
     <div className="row" style={{ fontSize: 13, padding: '8px 12px', background: hit ? 'var(--surface-2)' : undefined }}>
       <Tag tier={item.tier} />
       <div className="grow name">
-        {item.exerciseName} <span className="mu">{schemeLabel(item.tier, item.track, item.stage)}</span>
+        {item.exerciseName} <span className="mu">{itemSchemeLabel(item)}</span>
         {item.swapped && <span className="mu" style={{ fontSize: 11 }}> swapped in</span>}
       </div>
       <span className="cd mu" style={{ fontSize: 15, letterSpacing: '0.03em' }}>
         {item.sets.map((x, i) => {
-          const short = x.reps == null || (item.tier === 3 && x.amrap ? x.reps < 12 : x.reps < x.target);
+          const short =
+            x.reps == null || (item.bodyweight ? x.reps < x.target : item.tier === 3 && x.amrap ? x.reps < 12 : x.reps < x.target);
           return (
             <span key={i} className={short ? 'miss' : undefined}>
               {i > 0 ? ' ' : ''}
@@ -145,7 +153,7 @@ function ItemRow({ item, highlight }: { item: SessionItem; highlight: string }) 
         })}
       </span>
       <span className="w" style={{ fontSize: 16, minWidth: 40, textAlign: 'right' }}>
-        {fmt(item.weight)}
+        {item.bodyweight ? totalReps(item.sets) : fmt(item.weight)}
       </span>
       <Icon name={good ? 'arrowUp' : 'minus'} size={16} className={good ? 'accent' : 'miss'} />
     </div>

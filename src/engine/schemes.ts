@@ -52,6 +52,27 @@ export function buildSets(tier: Tier, track: Track, stage: number): SetLog[] {
   return Array.from({ length: s.sets }, () => ({ target: s.reps, reps: null, amrap: false }));
 }
 
+/** Bodyweight exercises: every set is AMRAP, targeting the reps from the same set last time. */
+export const BW_DEFAULT_SETS = 3;
+
+export function bodyweightLabel(sets: number): string {
+  return `${sets}×AMRAP`;
+}
+
+export function bodyweightSets(count: number, last: number[] | undefined): SetLog[] {
+  return Array.from({ length: Math.max(1, count) }, (_, i) => ({ target: last?.[i] ?? 0, reps: null, amrap: true }));
+}
+
+/** Total reps across a list of sets. Unlogged sets count as zero. */
+export function totalReps(sets: SetLog[]): number {
+  return sets.reduce((n, s) => n + (s.reps ?? 0), 0);
+}
+
+/** Scheme label for a session item, covering bodyweight exercises. */
+export function itemSchemeLabel(item: { tier: Tier; track: Track; stage: number; bodyweight?: boolean; sets: SetLog[] }): string {
+  return item.bodyweight ? bodyweightLabel(item.sets.length) : schemeLabel(item.tier, item.track, item.stage);
+}
+
 export function trackLabel(track: Track): string {
   return track === 'heavy' ? 'Heavy' : track === 'volume' ? 'Volume' : '';
 }
