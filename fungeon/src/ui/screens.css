@@ -107,3 +107,20 @@
 @keyframes nodepulse { 50% { transform: translate(-50%, -50%) scale(1.14); } }
 @keyframes ring { 0% { transform: scale(.9); opacity: .9 } 100% { transform: scale(1.12); opacity: 0 } }
 .loot.blocked { opacity: .6; border-style: dashed; }
+
+/* Biome theming: act 2 Glowcap Caverns (teal cave), act 3 The Blight (sickly purple). */
+.app[data-act="2"] .map-scroll { background: linear-gradient(#10252a, #173338 50%, #22282e); }
+.app[data-act="3"] .map-scroll { background: linear-gradient(#24162c, #2f2036 50%, #2b2320); }
+.app[data-act="2"] .combat {
+  background:
+    radial-gradient(circle at 20% 18%, #4fd1c522 0, transparent 22%),
+    radial-gradient(circle at 78% 30%, #4fd1c51a 0, transparent 18%),
+    radial-gradient(ellipse at 50% 100%, #0006, transparent 60%),
+    linear-gradient(180deg, #102a2e 0%, #1a3a3e 42%, #2e3236 42.5%, #1f2326 100%);
+}
+.app[data-act="3"] .combat {
+  background:
+    radial-gradient(circle at 50% 10%, #7b4a9e33 0, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, #0007, transparent 60%),
+    linear-gradient(180deg, #25162c 0%, #352141 42%, #3a2a2a 42.5%, #261c1c 100%);
+}

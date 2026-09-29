@@ -32,7 +32,7 @@ for (let step = 0; step < 3000; step++) {
     if (info && info.act !== lastAct) { lastAct = info.act; await page.waitForTimeout(300); await shot(`map-act${info.act}`); await page.evaluate(() => document.querySelector('.map-scroll').scrollTo(0, 0)); await page.waitForTimeout(150); await shot(`map-act${info.act}-top`); }
     await page.locator('.node.selectable').first().tap({ force: true });
   } else if (k === 'combat') {
-    if (++combatSteps === 60) { await page.screenshot({ path: `${out}/stuck-combat.png` }); console.log('STUCK', JSON.stringify(await page.$$eval('.hand-slot', (e) => e.map((x) => x.dataset.card + ':' + x.dataset.playable))), await page.locator('.app').innerText().then((x) => x.replace(/\n/g, '|').slice(0, 400))); break; }
+    if (++combatSteps === 60) { await page.screenshot({ path: `${out}/stuck-combat.png` }); (await import('node:fs')).writeFileSync(`${out}/stuck-save.json`, JSON.stringify({ stuck: await page.evaluate(() => localStorage.getItem('fungeon.run.v1')) })); console.log('STUCK', JSON.stringify(await page.$$eval('.hand-slot', (e) => e.map((x) => x.dataset.card + ':' + x.dataset.playable))), await page.locator('.app').innerText().then((x) => x.replace(/\n/g, '|').slice(0, 400))); break; }
     await page.evaluate(() => window.__fg.cheat((r) => { const c = r.screen.combat; if (!c) return; c.enemies.forEach((e) => { e.hp = Math.min(e.hp, 1); }); c.player.hp = c.player.maxHp; c.player.block = 50; }));
     await page.waitForTimeout(100);
     if (await t('proceed').count()) { await t('proceed').tap({ force: true }); continue; }
@@ -43,7 +43,7 @@ for (let step = 0; step < 3000; step++) {
     }
     const cards = page.locator('[data-testid^="card-"][data-playable="1"]');
     if (await cards.count()) {
-      const c = cards.first(); await c.tap({ force: true }); await page.waitForTimeout(150); await c.tap({ force: true }); await page.waitForTimeout(150);
+      const c = cards.first(); await c.tap({ force: true, position: { x: 14, y: 60 } }); await page.waitForTimeout(150); await c.tap({ force: true, position: { x: 14, y: 60 } }); await page.waitForTimeout(150);
       const en = page.locator('[data-enemy-uid].targetable').first(); if (await en.count()) await en.tap({ force: true });
     } else await t('end-turn').tap({ force: true });
   } else if (k === 'reward') {
@@ -56,11 +56,11 @@ for (let step = 0; step < 3000; step++) {
       if (await t('card-reward').count()) { await shot('cardreward'); await t('reward-card-0').tap({ force: true }); await t('card-take').tap({ force: true }); }
     } else { if (await page.locator('.loot.blocked').count()) await shot('reward-brews-full'); await t('proceed').tap({ force: true }); rewardTries = 0; }
   } else if (k === 'rest') {
-    if (await t('rest-heal').isEnabled()) await t('rest-heal').tap({ force: true });
-    else if (await t('rest-upgrade').isEnabled()) await t('rest-upgrade').tap({ force: true });
+    if ((await t('rest-heal').count()) && (await t('rest-heal').isEnabled())) await t('rest-heal').tap({ force: true });
+    else if ((await t('rest-upgrade').count()) && (await t('rest-upgrade').isEnabled())) await t('rest-upgrade').tap({ force: true });
     else await t('proceed').tap({ force: true });
     await page.waitForTimeout(200);
-    if ((await kind()) === 'rest') { await shot('rest-stuck'); await t('proceed').tap({ force: true }); }
+    if ((await kind()) === 'rest' && (await t('proceed').count())) await t('proceed').tap({ force: true });
   }
   else if (k === 'shop') await t('proceed').tap({ force: true });
   else if (k === 'event') await page.locator('[data-testid^="event-choice-"]:not([disabled])').first().tap({ force: true });

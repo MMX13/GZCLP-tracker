@@ -49,7 +49,7 @@ function Shell() {
   }, []);
   const showBar = inGame && run && kind !== 'title' && kind !== 'victory' && kind !== 'defeat';
   return (
-    <div className={`app k-${kind}`} data-screen={kind}>
+    <div className={`app k-${kind}`} data-screen={kind} data-act={inGame && run ? run.act : undefined}>
       {inGame && run ? (
         <>
           {showBar && <TopBar />}
