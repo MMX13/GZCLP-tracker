@@ -5,7 +5,7 @@ import type { CardView } from '../engine';
 import { CARDS, POTIONS, RELICS } from '../content';
 import { useGame } from './game';
 import { Btn, Sheet } from './kit';
-import { CardFace, CardZoom } from './Card';
+import { CardFace, CardZoom, gridCardW } from './Card';
 import { BLIGHT_TEXT } from './store';
 
 function Toggle({ on, onChange, label, testid }: { on: boolean; onChange: (v: boolean) => void; label: string; testid?: string }) {
@@ -101,13 +101,13 @@ export function CompendiumSheet({ onClose }: { onClose: () => void }) {
         ))}
       </div>
       {tab === 'cards' && (
-        <div className="grid" style={{ ['--gw' as string]: '92px' }}>
+        <div className="grid">
           {cards.map((c) => {
             const ok = seen.cards.includes(c.id);
             const v = ok ? safeView(c.id) : null;
             return (
               <button key={c.id} className={`grid-card ${ok ? '' : 'unseen'}`} onClick={() => v && setZoom(v)}>
-                {v ? <CardFace v={v} w={92} flat /> : <div className="card-unseen" style={{ ['--cw' as string]: '92px' }}>?</div>}
+                {v ? <CardFace v={v} w={gridCardW()} flat /> : <div className="card-unseen" style={{ ['--cw' as string]: `${gridCardW()}px` }}>?</div>}
               </button>
             );
           })}

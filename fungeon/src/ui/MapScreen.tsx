@@ -21,7 +21,7 @@ function hash(s: string): number {
   return ((h >>> 0) % 1000) / 1000;
 }
 function nodePos(n: MapNode): { x: number; y: number } {
-  const jx = (hash(n.id + 'x') - 0.5) * 8;
+  const jx = (hash(n.id + 'x') - 0.5) * 5;
   const jy = (hash(n.id + 'y') - 0.5) * 22;
   const lane = n.floor === 11 ? 2 : n.lane;
   return { x: 10 + lane * 20 + jx * (n.floor === 11 ? 0 : 1), y: TOP + (11 - n.floor) * ROW + jy * (n.floor === 11 ? 0 : 1) };
@@ -105,7 +105,7 @@ export function MapScreen() {
               aria-label={`${NODE_LABEL[n.type]}, floor ${n.floor}`}
               onClick={(e) => (sel ? dispatch({ type: 'selectNode', nodeId: n.id }) : tip(e.currentTarget, { title: NODE_LABEL[n.type] ?? n.type, body: vis ? 'Already visited.' : 'Not reachable yet.' }))}
             >
-              <Icon name={n.type as IconName} size={30} />
+              <Icon name={n.type as IconName} size={27} />
             </button>
           );
         })}

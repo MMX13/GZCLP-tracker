@@ -7,7 +7,7 @@ import type { CardInstance, CardView, RunState, Screen } from '../engine';
 import { POTIONS, RELICS } from '../content';
 import { useGame } from './game';
 import { Btn, Loot, Sheet } from './kit';
-import { CardFace, CardZoom } from './Card';
+import { CardFace, CardZoom, gridCardW } from './Card';
 import { CardGrid } from './TopBar';
 import { ACT_NAMES } from './store';
 
@@ -51,7 +51,7 @@ export function RewardScreen({ run }: { run: RunState }) {
               if (!v) return null;
               return (
                 <button key={c.uid} className={`choice ${cardSel === ci ? 'picked' : ''}`} onClick={() => { audio.play('select'); setCardSel(ci); }} data-testid={`reward-card-${ci}`}>
-                  <CardFace v={v} w={104} selected={cardSel === ci} flat />
+                  <CardFace v={v} w={gridCardW()} selected={cardSel === ci} flat />
                 </button>
               );
             })}
@@ -141,7 +141,7 @@ export function ShopScreen({ run }: { run: RunState }) {
           if (!v) return null;
           return (
             <button key={it.card.uid} className={`shop-card ${it.sold ? 'sold' : ''}`} onClick={() => setPick({ kind: 'card', index: i })} data-testid={`shop-card-${i}`} disabled={it.sold}>
-              <CardFace v={v} w={94} flat dim={it.sold} />
+              <CardFace v={v} w={gridCardW(28)} flat dim={it.sold} />
               {it.sold ? <span className="sold-tag">SOLD</span> : <span className={`price ${gold < it.price ? 'poor' : ''}`}><Icon name="acorn" size={16} />{it.price}</span>}
             </button>
           );
@@ -281,7 +281,7 @@ export function CardSelectScreen({ run }: { run: RunState }) {
       <h1>{s.prompt}</h1>
       {s.count > 1 && <p className="center muted">{sel.length}/{s.count} chosen</p>}
       <div className="cs-grid">
-        <CardGrid cards={cards} run={run} onPick={toggle} selected={sel} w={90} prefix="cs" />
+        <CardGrid cards={cards} run={run} onPick={toggle} selected={sel} prefix="cs" />
       </div>
       <div className="cs-foot">
         {cur && up && (

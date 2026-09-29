@@ -159,7 +159,8 @@ p { margin: 0 0 .5em; }
 .tb-stat.gold b { color: var(--gold); }
 .tb-stat.flash { animation: pop .4s; }
 .tb-act { flex: 1; min-width: 0; text-align: center; font-family: var(--font-h); line-height: 1.05; font-size: .88rem; overflow: hidden; }
-.tb-act span { white-space: nowrap; }
+.tb-act span { white-space: nowrap; font-size: 1rem; }
+.tb-act small { font-size: .78rem; }
 .tb-act small { display: block; font-size: .72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tb-btn { position: relative; width: 44px; height: 44px; border-radius: 14px; background: #0005; display: grid; place-items: center; }
 .tb-btn small { position: absolute; right: 1px; bottom: 0; font: 700 .72rem var(--font-h); background: var(--ink); border-radius: 8px; padding: 0 4px; }
@@ -175,7 +176,7 @@ p { margin: 0 0 .5em; }
 .relic.flash { animation: relicflash .9s; }
 @keyframes relicflash { 0%, 100% { transform: scale(1); } 30% { transform: scale(1.5); background: var(--gold); box-shadow: 0 0 20px var(--gold); } }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--gw, 92px), 1fr)); gap: 12px 8px; justify-items: center; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 8px; justify-items: center; }
 .grid-card { position: relative; border-radius: 10px; padding: 0; min-height: 44px; }
 .grid-card.picked .card { outline: 4px solid var(--gold); outline-offset: 2px; }
 .grid-card .check { position: absolute; right: -4px; top: -6px; width: 28px; height: 28px; border-radius: 50%; background: var(--gold); display: grid; place-items: center; border: 2px solid var(--ink); z-index: 3; }

@@ -11,7 +11,7 @@ const TYPE_LABEL: Record<string, string> = { attack: 'Attack', skill: 'Skill', p
 export function CardFace({ v, w, dim, selected, className = '', style, testid, showReason, flat }: {
   v: CardView; w: number; dim?: boolean; selected?: boolean; className?: string; style?: CSSProperties; testid?: string; showReason?: boolean; flat?: boolean;
 }) {
-  const long = v.name.length > 12;
+  const nameEm = Math.min(1.04, 12.2 / Math.max(1, v.name.length));
   return (
     <div
       className={`card t-${v.type} r-${v.rarity} ${dim ? 'dim' : ''} ${selected ? 'sel' : ''} ${v.upgraded ? 'upg' : ''} ${flat ? 'flat' : ''} ${v.text.length > 52 ? 'dense' : ''} ${className}`}
@@ -20,7 +20,7 @@ export function CardFace({ v, w, dim, selected, className = '', style, testid, s
       data-card={v.id}
     >
       <div className="card-inner">
-        <div className={`card-name ${long ? 'long' : ''}`}>{v.name}</div>
+        <div className="card-name" style={{ fontSize: `${nameEm}em` }}>{v.name}</div>
         <div className="card-art"><Art k={v.art} size={64} /></div>
         <div className="card-text">
           <span>
@@ -50,6 +50,12 @@ export function CardFace({ v, w, dim, selected, className = '', style, testid, s
       {dim && showReason && v.reason && <div className="card-reason">{v.reason}</div>}
     </div>
   );
+}
+
+/** Card width so that 3 cards fit per row inside a sheet / screen. */
+export function gridCardW(pad = 32): number {
+  const W = Math.min(480, typeof window !== 'undefined' ? window.innerWidth : 390);
+  return Math.max(92, Math.floor((W - pad - 16) / 3));
 }
 
 function norm(s: string) { return s.toLowerCase().replace(/[^a-z ]/g, '').trim(); }

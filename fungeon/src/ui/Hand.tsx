@@ -34,7 +34,7 @@ export function Hand({ views, sel, disabled, onTap, onDrop, onZoom, onHover, onD
   const short = typeof window !== 'undefined' && window.innerHeight < 700;
   const cw = Math.max(88, Math.min(132, Math.round(W * (short ? 0.28 : 0.3))));
   const ch = Math.round(cw * 1.42);
-  const step = n <= 1 ? 0 : Math.min(cw * 0.94, (W - cw - 26) / (n - 1));
+  const step = n <= 1 ? 0 : Math.min(cw * 0.9, (W - cw - 28) / (n - 1));
   const x0 = (W - (cw + step * (n - 1))) / 2;
   const [drag, setDrag] = useState<DragState | null>(null);
   const st = useRef<{ uid: number; x: number; y: number; id: number; timer: number; moved: boolean; long: boolean } | null>(null);

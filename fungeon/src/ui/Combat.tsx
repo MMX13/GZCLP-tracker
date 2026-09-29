@@ -149,7 +149,7 @@ function PendingSheet({ combat, run }: { combat: CombatState; run: RunState }) {
         <small>{p.min === p.max ? `Choose ${p.max}` : `Choose ${p.min}-${p.max}`} · {picked.length} selected</small>
       </div>
       <div className="pending-cards">
-        <CardGrid cards={pool} run={run} onPick={toggle} selected={picked} w={84} prefix="pc" />
+        <CardGrid cards={pool} run={run} onPick={toggle} selected={picked} prefix="pc" />
       </div>
       <div className="row gap">
         <Btn testid="pending-confirm" disabled={!ok || busy} onClick={() => dispatch({ type: 'choose', uids: picked })} icon="check">Confirm</Btn>

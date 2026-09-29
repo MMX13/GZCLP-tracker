@@ -426,6 +426,24 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [persist, playEvents, showToast]);
 
+  // Dev hook (only with ?dev in the URL) so scripts can cheat: window.__fg.cheat((run) => { ... })
+  useEffect(() => {
+    if (!/[?&]dev\b/.test(location.search)) return;
+    (window as unknown as Record<string, unknown>).__fg = {
+      get run() { return runRef.current; },
+      busy: () => busyRef.current,
+      dispatch,
+      act,
+      cheat: (fn: (r: RunState) => void) => {
+        if (!runRef.current) return;
+        const r = structuredClone(runRef.current);
+        fn(r);
+        runRef.current = r;
+        setRun(r);
+      },
+    };
+  }, [dispatch]);
+
   const skip = useCallback(() => { skipRef.current = true; }, []);
 
   const startRun = useCallback((ascension: number) => {

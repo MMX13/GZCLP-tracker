@@ -5,13 +5,12 @@ import type { CardInstance, RunState } from '../engine';
 import { POTIONS, RELICS } from '../content';
 import { useGame } from './game';
 import { Btn, Sheet, useTip } from './kit';
-import { CardFace, CardZoom } from './Card';
+import { CardFace, CardZoom, gridCardW } from './Card';
 import { SettingsSheet } from './Menus';
-import { ACT_NAMES } from './store';
 
 const TYPE_ORDER: Record<string, number> = { attack: 0, skill: 1, plant: 2, power: 3, status: 4, curse: 5 };
 
-export function CardGrid({ cards, run, onPick, selected, dimUnselectable, w = 92, prefix = 'gc' }: {
+export function CardGrid({ cards, run, onPick, selected, dimUnselectable, w = gridCardW(), prefix = 'gc' }: {
   cards: CardInstance[]; run?: RunState; onPick?: (c: CardInstance) => void; selected?: number[]; dimUnselectable?: boolean; w?: number; prefix?: string;
 }) {
   return (
@@ -69,8 +68,8 @@ export function TopBar() {
         <div className="tb-stat hp" data-testid="hp"><Icon name="heart" size={22} /><b>{hp}</b><small>/{maxHp}</small></div>
         <div className={`tb-stat gold ${fx.goldFlash ? 'flash' : ''}`} key={`g${fx.goldFlash}`} data-testid="gold"><Icon name="acorn" size={22} /><b>{run.gold}</b></div>
         <div className="tb-act" data-testid="floor">
-          <span>Act {run.act} · F{run.floor}</span>
-          <small>{ACT_NAMES[run.act]}</small>
+          <span>Act {run.act}</span>
+          <small>Floor {run.floor}</small>
         </div>
         <button className="tb-btn" onClick={() => setDeck(true)} data-testid="deck-btn" aria-label="Deck">
           <Icon name="deck" size={24} /><small>{run.deck.length}</small>

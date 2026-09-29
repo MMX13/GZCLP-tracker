@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
-import { Eye, Hl, Ln, Spark, Dot, P, INK } from './kit';
+import { Eye, Cheek, Smile, Hl, Ln, Spark, Dot, P, INK } from './kit';
 
 type F = () => ReactElement;
 const Burst = ({ cx = 50, cy = 50, r = 40, n = 8, c = P.gold }: { cx?: number; cy?: number; r?: number; n?: number; c?: string }) => {
@@ -128,7 +128,25 @@ export const ILLUSTRATIONS: Record<string, F> = {
   stump: () => (<><path d="M16 92 Q28 82 26 44 h48 q-2 38 10 48Z" fill={P.brown} /><ellipse cx="50" cy="44" rx="26" ry="10" fill="#d9a866" /><ellipse cx="50" cy="44" rx="15" ry="5" fill="none" strokeWidth={2.2} /><ellipse cx="50" cy="44" rx="6" ry="2" fill="none" strokeWidth={2} /><Ln d="M36 56 v30 M52 56 v30 M66 56 v26" w={2.2} c={P.dbrown} /><Cap x={76} y={50} s={0.4} /></>),
   pond: () => (<><ellipse cx="50" cy="62" rx="42" ry="26" fill="#a39c8c" /><ellipse cx="50" cy="62" rx="34" ry="19" fill="#6aa5d8" /><Ln d="M28 62 q8 -5 14 0 M56 66 q8 -5 14 0" w={2.5} c="#dff2f7" /><ellipse cx="66" cy="58" rx="9" ry="4" fill={P.moss} strokeWidth={2.5} /><Ln d="M28 30 v22 M38 26 v24" w={3.5} c={P.deep} /><ellipse cx="28" cy="24" rx="4" ry="8" fill="#8b5a2b" /><ellipse cx="38" cy="20" rx="4" ry="8" fill="#8b5a2b" /></>),
   campfire: () => (<><path d="M50 12 C28 40 22 60 30 74 Q50 88 70 74 C78 60 72 40 50 12Z" fill="#f08a3a" /><path d="M50 40 C38 56 38 68 50 76 C62 68 62 56 50 40Z" fill={P.gold} strokeWidth={3} /><Ln d="M14 88 L86 72 M14 72 L86 88" w={11} c={INK} /><Ln d="M14 88 L86 72 M14 72 L86 88" w={6} c={P.brown} /></>),
-  merchant: () => (<><path d="M14 92 C10 60 24 40 50 40 C76 40 90 60 86 92Z" fill="#7a5aa8" /><ellipse cx="50" cy="56" rx="17" ry="15" fill={P.beige} /><Eye x={44} y={55} r={3.5} /><Eye x={57} y={55} r={3.5} /><path d="M44 63 Q50 68 56 63" fill="none" strokeWidth={2.5} /><path d="M28 44 C28 14 72 14 72 44Z" fill={P.red} /><circle cx="42" cy="28" r="4.5" fill={P.cream} strokeWidth={2.2} /><circle cx="60" cy="24" r="3.5" fill={P.cream} strokeWidth={2.2} /><circle cx="86" cy="76" r="9" fill={P.gold} strokeWidth={3} /></>),
+  merchant: () => (<>
+    <ellipse cx="50" cy="94" rx="34" ry="4" fill="#000" opacity="0.2" stroke="none" />
+    <Ln d="M18 62 L8 40" w={5} /><circle cx="7" cy="35" r="6" fill="#4a3324" />
+    <ellipse cx="32" cy="92" rx="9" ry="5" fill="#4a3324" /><ellipse cx="68" cy="92" rx="9" ry="5" fill="#4a3324" />
+    <ellipse cx="50" cy="60" rx="35" ry="33" fill="#3f8f7a" />
+    <Ln d="M50 30 V92" w={3} c="#245a4c" />
+    <Hl x={30} y={48} rx={4} ry={11} r={20} o={0.5} />
+    <path d="M34 62 h32 l5 28 q-21 6 -42 0z" fill={P.cream} strokeWidth={3} />
+    <Ln d="M34 62 Q50 68 66 62" w={2.5} /><rect x="43" y="74" width="14" height="10" rx="3" fill={P.beige} strokeWidth={2.2} />
+    <path d="M76 60 h16 q4 16 -2 26 h-12 q-6 -10 -2 -26z" fill="#b9855a" />
+    <Ln d="M76 66 h16" w={2.5} /><path d="M80 60 q1 -10 6 -10 q5 0 6 10z" fill={P.dbrown} strokeWidth={2.5} /><Dot x={84} y={76} r={3} c={P.gold} />
+    <Ln d="M42 18 Q38 6 30 6 M58 18 Q62 6 70 6" w={3} /><Dot x={30} y={6} r={3.5} c={P.gold} /><Dot x={70} y={6} r={3.5} c={P.gold} />
+    <circle cx="50" cy="32" r="19" fill="#5c3d28" />
+    <Hl x={42} y={22} rx={6} ry={2.5} r={-20} />
+    <circle cx="42" cy="31" r="8.5" fill="#fff" strokeWidth={3} stroke={P.gold} /><circle cx="59" cy="31" r="8.5" fill="#fff" strokeWidth={3} stroke={P.gold} />
+    <Ln d="M50 31 h1" w={3} c={P.gold} />
+    <Eye x={42} y={32} r={4.5} /><Eye x={59} y={32} r={4.5} />
+    <Cheek x={34} y={42} r={3.5} /><Cheek x={67} y={42} r={3.5} /><Smile x={50} y={42} w={5} h={3} />
+  </>),
   chest: () => (<><path d="M10 50 C10 24 90 24 90 50Z" fill={P.brown} /><rect x="10" y="48" width="80" height="42" rx="6" fill="#a3703a" /><Ln d="M10 48 h80 M30 26 v64 M70 26 v64" w={4} c={P.gold} /><Ln d="M30 26 v64 M70 26 v64" w={0.01} /><rect x="42" y="42" width="16" height="18" rx="4" fill={P.gold} strokeWidth={3} /><circle cx="50" cy="51" r="3" fill={INK} stroke="none" /></>),
   skull: () => (<><path d="M16 50 C10 14 90 14 84 50 C84 62 76 66 72 68 V84 H28 V68 C24 66 16 62 16 50Z" fill={P.cream} /><ellipse cx="36" cy="52" rx="10" ry="12" fill={INK} stroke="none" /><ellipse cx="64" cy="52" rx="10" ry="12" fill={INK} stroke="none" /><path d="M50 62 l-5 9 h10z" fill={INK} stroke="none" /><Ln d="M40 84 v-8 M50 84 v-8 M60 84 v-8" w={3} /><Hl x={32} y={30} rx={8} ry={3} r={-30} o={0.8} /></>),
   question: () => (<><path d="M30 34 C28 8 76 6 74 34 C73 50 52 50 50 66" fill="none" strokeWidth={17} stroke={INK} /><path d="M30 34 C28 8 76 6 74 34 C73 50 52 50 50 66" fill="none" strokeWidth={9} stroke={P.gold} /><circle cx="50" cy="84" r="9" fill={P.gold} strokeWidth={3.5} /></>),
