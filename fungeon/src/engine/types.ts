@@ -531,6 +531,11 @@ export interface Api {
   /** Give block to an arbitrary entity without modifiers (enemy shielding an ally). */
   giveBlock(target: EntityId, amount: number): void;
   heal(target: EntityId, amount: number): void;
+  /**
+   * Set an entity's HP directly (optionally also max HP) and emit a 'damage' (kind 'hp') or 'heal' event so the UI stays in sync.
+   * Never kills: hp is clamped to >= 1 (use loseHp for lethal effects). Ignores Block and hooks (no onHpLoss).
+   */
+  setHp(target: EntityId, hp: number, maxHp?: number): void;
 
   // --- statuses
   /** Apply (or remove with negative) stacks of a status. Triggers onApplyRot for rot from player. */

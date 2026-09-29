@@ -12,7 +12,7 @@
 //  * Known keyword and status names (Compost, Rot, Might, Plant, ...) are returned as segments with tone 'keyword'.
 import type { CardView, EventView, IntentView, StatusView } from './index';
 import type { CardInstance, EntityId, RunState } from './types';
-import { PLAYER } from './types';
+import { PLAYER, S } from './types';
 import type { Keyword } from './types';
 import { allStatuses, findEnemy, findStatus, getCard, registryVersion } from './registry';
 import { attackDamage, blockAmount, dryBattle, playableReason } from './combat';
@@ -175,7 +175,19 @@ export function buildIntentView(run: RunState, uid: EntityId): IntentView | null
   if (!move) return null;
   const v: IntentView = { name: move.name, intents: move.intents };
   if (move.dmg !== undefined) {
-    v.dmg = attackDamage(b, e.uid, PLAYER, move.dmg);
+    // The player's turn-decaying debuffs (Soggy) tick down at the end of the player's turn, BEFORE the enemy attacks,
+    // so show the damage as it will actually land: evaluate with those stacks reduced by 1.
+    const st = b.c.player.statuses;
+    const soggy = st[S.soggy];
+    if (soggy !== undefined) {
+      if (soggy > 1) st[S.soggy] = soggy - 1;
+      else delete st[S.soggy];
+    }
+    try {
+      v.dmg = attackDamage(b, e.uid, PLAYER, move.dmg);
+    } finally {
+      if (soggy !== undefined) st[S.soggy] = soggy;
+    }
     v.hits = move.hits ?? 1;
   } else if (move.hits !== undefined) v.hits = move.hits;
   return v;

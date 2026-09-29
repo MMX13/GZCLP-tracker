@@ -1212,6 +1212,17 @@ export class ApiImpl implements Api {
     healEnt(this.b, target, amount);
   }
 
+  setHp(target: EntityId, hp: number, maxHp?: number): void {
+    const e = getEnt(this.b.c, target);
+    if (!alive(e)) return;
+    if (maxHp !== undefined) e.maxHp = Math.max(1, Math.floor(maxHp));
+    const nh = Math.min(e.maxHp, Math.max(1, Math.floor(hp)));
+    const d = nh - e.hp;
+    e.hp = nh;
+    if (d < 0) emit(this.b, { t: 'damage', target, source: undefined, amount: -d, blocked: 0, hpAfter: nh, blockAfter: e.block, kind: 'hp' });
+    else if (d > 0) emit(this.b, { t: 'heal', target, amount: d, hpAfter: nh });
+  }
+
   apply(target: EntityId, s: StatusId, amount: number): void {
     addStatus(this.b, target, s, amount);
     if (s === S.rot && amount > 0 && this.self === PLAYER && target !== PLAYER) fireAll(this.b, 'onApplyRot', target, amount);

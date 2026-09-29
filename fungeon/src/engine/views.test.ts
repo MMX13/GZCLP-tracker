@@ -119,8 +119,11 @@ describe('intent / status views', () => {
     assert.deepEqual({ ...iv }, { name: 'Hit', intents: ['attack'], dmg: 5, hits: 1 });
     enemyOf(sc.run).statuses.might = 2;
     cbt(sc.run).player.statuses.soggy = 1;
+    assert.equal(intentView(sc.run, 'e1')!.dmg, 7); // Soggy 1 expires at the end of my turn, before the hit
+    cbt(sc.run).player.statuses.soggy = 2;
     iv = intentView(sc.run, 'e1')!;
     assert.equal(iv.dmg, 10);
+    assert.equal(cbt(sc.run).player.statuses.soggy, 2); // view does not mutate
     enemyOf(sc.run).statuses.wilted = 1;
     assert.equal(intentView(sc.run, 'e1')!.dmg, 7); // 7*.75*1.5 = 7.875
     assert.equal(intentView(sc.run, 'nope'), null);

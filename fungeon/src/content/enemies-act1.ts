@@ -111,11 +111,11 @@ export const ACT1_ENEMIES: EnemyDef[] = [
         const s = crossed(api, 'split', 0.5);
         if (!s) return;
         api.say(s.uid, 'Splish-split!');
-        s.hp = Math.max(1, Math.ceil(s.hp * 0.8));
+        api.setHp(s.uid, Math.ceil(s.hp * 0.8));
         for (let i = 0; i < 2; i++) {
           if (api.enemies().length >= 5) break;
           const slug = api.spawnEnemy('slug', 'right');
-          if (slug) { slug.hp = 16; slug.maxHp = 16; }
+          if (slug) api.setHp(slug.uid, 16, 16);
         }
       },
     },
