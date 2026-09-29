@@ -1,1 +1,4 @@
-:root{}
+@import './base.css';
+@import './cards.css';
+@import './combat.css';
+@import './screens.css';
