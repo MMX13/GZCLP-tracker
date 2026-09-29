@@ -40,34 +40,34 @@ Columns: name | id | cost (+N = Bloom cost nutrients) | type | rarity | effect (
 | Mildew | mildew | -1 | curse | special | A damp, clingy smell. (unplayable) | - |
 | Doubt | doubt | -1 | curse | special | At end of turn, if in hand, gain 1 Wilted. (unplayable) | - |
 | Fun-guy Fisticuffs | fungi_fisticuffs | 1 | attack | common | Deal 4 damage 2 times. | dmg=5 |
-| Enoki Needles | enoki_needles | 1 | attack | common | Deal 3 damage to a random enemy 3 times. | dmg=4 |
-| Spore Spray | spore_spray | 1 | attack | common | Deal 4 damage to ALL enemies. | dmg=6 |
+| Enoki Needles | enoki_needles | 1 | attack | common | Deal 4 damage to a random enemy 3 times. | dmg=5 |
+| Spore Spray | spore_spray | 1 | attack | common | Deal 5 damage to ALL enemies. | dmg=7 |
 | Root Whip | root_whip | 1 | attack | common | Deal 5 damage. +4 if you have a Plant. | dmg=6 bonus=5 |
-| Puffball Pop | puffball_pop | 1 | attack | common | Deal 3 damage. Add a Spore to your hand. | dmg=4 sup=1 |
+| Puffball Pop | puffball_pop | 1 | attack | common | Deal 5 damage. Add a Spore to your hand. | dmg=7 sup=1 |
 | Gill Slice | gill_slice | 1 | attack | common | Deal 5 damage. Apply 2 Rot. | dmg=6 rot=3 |
-| Portobello Punch | portobello_punch | 2 | attack | common | Deal 12 damage. | dmg=16 |
-| Cap Slam | cap_slam | 1 | attack | common | Deal 6 damage. Put a discarded card on top of your draw pile. | dmg=9 |
-| Bark Armor | bark_armor | 1 | skill | common | Gain 5 Block. (keep) | blk=7 |
+| Portobello Punch | portobello_punch | 2 | attack | common | Deal 15 damage. | dmg=20 |
+| Cap Slam | cap_slam | 1 | attack | common | Deal 8 damage. Put a discarded card on top of your draw pile. | dmg=11 |
+| Bark Armor | bark_armor | 1 | skill | common | Gain 6 Block. (keep) | blk=9 |
 | Mulch | mulch | 1 | skill | common | Gain 6 Block. Compost a card from your hand. | blk=8 |
-| Shiitake Shuffle | shiitake_shuffle | 1 | skill | common | Draw 2 cards. Discard a card. | draw=3 |
+| Shiitake Shuffle | shiitake_shuffle | 0 | skill | common | Draw 2 cards. Discard a card. | draw=3 |
 | Forage | forage | 1 | skill | common | Gain 4 Block. Draw 1 card. | blk=6 |
 | Toxic Drip | toxic_drip | 1 | skill | common | Apply 5 Rot. | rot=7 |
 | Fester Cloud | fester_cloud | 2 | skill | common | Apply 4 Rot to ALL enemies. | rot=6 |
-| Drizzle | drizzle | 1 | skill | common | Apply 2 Soggy. Draw 1 card. | soggy=3 |
-| Bramble Coat | bramble_coat | 1 | skill | common | Gain 5 Block. Gain 2 Prickly. | blk=6 prickly=3 |
-| Dewdrop Sip | dewdrop_sip | 1 | skill | common | Gain 4 Block. Gain 3 Regrow. | blk=5 regrow=4 |
-| Sow Spores | sow_spores | 1 | skill | common | Add 2 Spores to your hand. | spores=3 |
+| Drizzle | drizzle | 1 | skill | common | Apply 2 Soggy. Gain 3 Block. Draw 1 card. | soggy=3 blk=4 |
+| Bramble Coat | bramble_coat | 1 | skill | common | Gain 6 Block. Gain 1 Prickly. | blk=7 prickly=2 |
+| Dewdrop Sip | dewdrop_sip | 1 | skill | common | Gain 3 Block. Gain 2 Regrow. | blk=5 regrow=3 |
+| Sow Spores | sow_spores | 1 | skill | common | Add 2 Spores to your hand. Draw 1 card. | spores=3 |
 | Snappy Sprout | snappy_sprout | 1 | plant | common | Each turn: hit a random enemy for 3. Bloom: 3 Rot to ALL. [Plant 2] | dmg=4 rot=4 |
-| Fern-ando | fern_ando | 2 | plant | common | Each turn: gain 3 Block. [Perennial] | cost 1; blk=4 |
+| Fern-ando | fern_ando | 1 | plant | common | Each turn: gain 4 Block. [Perennial] | blk=5 |
 | Puffball | puffball | 1 | plant | common | Bloom: deal 10 damage to ALL enemies. [Plant 2] | dmg=14 |
-| Bramble Patch | bramble_patch | 1 | plant | common | Each turn: gain 1 Prickly. Bloom: gain 8 Block. [Plant 3] | prickly=2 |
+| Bramble Patch | bramble_patch | 1 | plant | common | Each turn: gain 2 Block. Bloom: gain 3 Prickly. [Plant 3] | blk=3 prickly=4 |
 | Touch of Rot | touch_of_rot | 1 | skill | uncommon | Multiply the target's Rot by 2. (compost) | times=3 |
 | Stinkhorn | stinkhorn | 2 | attack | uncommon | Deal 8 damage. Apply 4 Rot. | dmg=11 rot=6 |
 | Putrefy | putrefy | 1 | skill | uncommon | The target loses HP equal to its Rot. | cost 0 |
-| Contagion | contagion | 1 | skill | uncommon | Give the target's Rot to all other enemies. | cost 0 |
+| Contagion | contagion | 1 | skill | uncommon | Copy the target's Rot to all other enemies. | cost 0 |
 | Fairy Ring | fairy_ring | 1 | power | uncommon | Whenever a plant blooms, apply 2 Rot to ALL enemies. | n=3 |
-| Decomposer | decomposer | 1 | power | uncommon | Whenever you Compost a card, hit a random enemy for 2. | n=3 |
-| Slow Simmer | slow_simmer | 2 | power | uncommon | At the start of your turn, apply 2 Rot to ALL enemies. | n=3 |
+| Decomposer | decomposer | 1 | power | uncommon | Whenever you Compost a card, hit a random enemy for 3. | n=4 |
+| Slow Simmer | slow_simmer | 3 | power | uncommon | At the start of your turn, apply 2 Rot to ALL enemies. | n=3 |
 | Root Network | root_network | 1 | power | uncommon | At end of turn, gain 2 Block per Plant. | n=3 |
 | Green Thumb | green_thumb | 1 | power | uncommon | At the start of your turn, your Plants grow 1 extra. | kw innate |
 | Glowcap | glowcap | 1 | plant | uncommon | Bloom: gain 2 Spores and draw 2 cards. [Plant 2] | draw=3 |
@@ -84,22 +84,22 @@ Columns: name | id | cost (+N = Bloom cost nutrients) | type | rarity | effect (
 | Puff Up | puff_up | 1 | skill | uncommon | Gain 2 Might. | might=3 |
 | Toughen Up | toughen_up | 1 | skill | uncommon | Gain 2 Sturdy. | sturdy=3 |
 | Spore Whirl | spore_whirl | X | attack | uncommon | Deal 4 damage to ALL enemies X times. | dmg=5 |
-| Forager's Pick | foragers_pick | 1 | skill | uncommon | Choose 1 of 3 random cards. It costs 0 this turn. (compost) | up=1 |
+| Forager's Pick | foragers_pick | 0 | skill | uncommon | Choose 1 of 3 random cards. It costs 0 this turn. (compost) | up=1 |
 | Spore Sack | spore_sack | 2 | skill | uncommon | Add 4 Spores to your hand. (innate,compost) | spores=5 |
 | Spore-adic Fire | sporadic_fire | 1 | attack | uncommon | Deal 2 damage for each card played this turn. | dmg=3 |
-| Spore Heart | spore_heart | 1 | power | rare | At the start of your turn, add 1 Spore to your hand. | n=2 |
-| Growth Spurt | growth_spurt | 3 | power | rare | At the start of your turn, gain 2 Might. | cost 2 |
+| Spore Heart | spore_heart | 1 | power | rare | At the start of your turn, add a Spore to your hand. | n=2 |
+| Growth Spurt | growth_spurt | 3 | power | rare | At the start of your turn, gain 2 Might. | n=3 |
 | Rot Wave | rot_wave | 1 | power | rare | Whenever an enemy dies, spread its Rot to ALL enemies. | cost 0 |
 | Venom Cap | venom_cap | 1 | power | rare | Whenever you are attacked, apply 2 Rot to the attacker. | n=3 |
 | Doomcap | doomcap | 2 | plant | rare | Bloom: deal 10 damage and apply 10 Rot to ALL enemies. [Plant 3] | dmg=14 rot=14 |
 | Ancient Oak | ancient_oak | 3 | plant | rare | Each turn: gain 5 Block and hit a random enemy for 5. [Perennial] | blk=7 dmg=7 |
-| Bumper Crop | bumper_crop | 1 | skill | rare | Grow all Plants by 2. Draw a card for each Bloom. | n=3 |
-| Harvest Time | harvest_time | 2 | skill | rare | Grow all Plants until they Bloom. | cost 1 |
+| Bumper Crop | bumper_crop | 1 | skill | rare | Grow all Plants by 2. For each Bloom, draw a card and gain 1 Spore. | n=3 |
+| Harvest Time | harvest_time | 1 | skill | rare | Grow all Plants until they Bloom. | cost 0 |
 | Mushroom Cloud | mushroom_cloud | 2 +4N | attack | rare | Deal 18 damage to ALL enemies. | bloom 3; dmg=22 |
-| Circle of Life | circle_of_life | 1 +3N | skill | rare | Return a card from your Compost pile to your hand. | bloom 2 |
+| Circle of Life | circle_of_life | 0 +2N | skill | rare | Return a card from your Compost pile to your hand. (compost) | bloom 1 |
 | Second Spring | second_spring | 1 +2N | skill | rare | Heal 6 HP. Gain 3 Regrow. (compost) | heal=9 regrow=4 |
 | Truffle Shuffle | truffle_shuffle | 0 | skill | rare | Gain 1 Spore. Draw 2 cards. (compost) | draw=3 |
-| Death Cap | death_cap | 2 | attack | rare | Deal 10 damage. Apply 8 Rot. (compost) | dmg=13 rot=11 |
+| Death Cap | death_cap | 2 | attack | rare | Deal 10 damage. Apply 7 Rot. (compost) | dmg=13 rot=9 |
 | Mother of Spores | mother_of_spores | 2 | skill | rare | Add 4 Spore+ to your hand. (compost) | spores=5 |
 | Downpour | downpour | 1 | skill | rare | Apply 2 Soggy and 2 Wilted to ALL enemies. (compost) | cost 0 |
 | Sporefall | sporefall | X | skill | rare | Add X+1 Spores to your hand. | plus=2 |

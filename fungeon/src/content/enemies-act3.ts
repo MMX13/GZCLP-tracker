@@ -107,7 +107,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['mimic_rot', 'mimic_block', 'chop', 'mimic_plant', 'chop']),
   },
   {
-    id: 'mold_hydra', name: 'Mold Hydra', act: 3, tier: 'elite', hp: [66, 72], art: 'mold_hydra', scale: 1.4,
+    id: 'mold_hydra', name: 'Mold Hydra', act: 3, tier: 'elite', hp: [60, 65], art: 'mold_hydra', scale: 1.4,
     passiveText: 'The middle head. Each fallen head makes it +2 Might. Roars give every head Regrow 5.',
     hooks: {
       onEnemyDeath: (api, _n, enemy) => {
@@ -182,7 +182,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['puff', 'fume']),
   },
   {
-    id: 'hydra_head', name: 'Hydra Head', act: 3, tier: 'minion', hp: [36, 40], art: 'hydra_head',
+    id: 'hydra_head', name: 'Hydra Head', act: 3, tier: 'minion', hp: [32, 36], art: 'hydra_head',
     onSpawn: (a, s) => a.apply(s.uid, S.regrow, 2),
     passiveText: 'Regrows. Part of the Mold Hydra.',
     moves: {

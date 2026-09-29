@@ -120,13 +120,13 @@ export const ACT2_ENEMIES: EnemyDef[] = [
       call: { name: 'Lullaby Call', intents: ['summon', 'block'], run: (a) => { a.gainBlock(10, false); summon(a, 'mothling', 2); } },
       storm: atk('Dust Storm', 8, 1, (a) => { a.apply(PLAYER, S.wilted, 2); a.apply(PLAYER, S.brittle, 2); }),
       swoop: atk('Swoop', 17),
-      frenzy: atk('Lamp Frenzy', 6, 4),
+      frenzy: atk('Lamp Frenzy', 5, 4),
     },
     ai: (c) => (c.self.mem.frenzy ? cyc(c, ['frenzy', 'storm', 'call', 'swoop']) : cyc(c, ['call', 'storm', 'swoop', 'storm'])),
   },
   {
-    id: 'slime_colossus', name: 'Ooze Colossus', act: 2, tier: 'boss', hp: [365, 375], art: 'slime_colossus', scale: 1.6,
-    passiveText: 'Absorbs Slimelets: each one gives it 8 Block and 1 Might. Kill them first! Enrages at half HP (+2 Might).',
+    id: 'slime_colossus', name: 'Ooze Colossus', act: 2, tier: 'boss', hp: [325, 335], art: 'slime_colossus', scale: 1.6,
+    passiveText: 'Absorbs Slimelets: each one gives it 8 Block and 2 Might. Kill them first! Then it Heaves (charging) and CRUSHES for 28. Enrages at half HP (+2 Might).',
     hooks: {
       onHpLoss: (api) => {
         const s = crossed(api, 'rage', 0.5);
@@ -137,7 +137,8 @@ export const ACT2_ENEMIES: EnemyDef[] = [
     },
     moves: {
       spawn: fx('Ooze Out', ['summon'], (a) => summon(a, 'slimelet', 2)),
-      slam: atk('Colossal Slam', 16),
+      heave: { name: 'Heave', intents: ['block', 'buff'], run: (a) => a.gainBlock(10, false) },
+      crush: atk('Colossal Crush', 28),
       absorb: {
         name: 'Absorb', intents: ['block', 'buff'],
         run: (a, s) => {
@@ -145,13 +146,13 @@ export const ACT2_ENEMIES: EnemyDef[] = [
             if (e.id !== 'slimelet') continue;
             a.loseHp(e.uid, 999);
             a.giveBlock(s.uid, 8);
-            a.apply(s.uid, S.might, 1);
+            a.apply(s.uid, S.might, 2);
           }
         },
       },
       wobble: atk('Wobble', 10, 1, (a) => a.apply(PLAYER, S.soggy, 2)),
     },
-    ai: (c) => cyc(c, ['spawn', 'slam', 'absorb', 'wobble']),
+    ai: (c) => cyc(c, ['spawn', 'absorb', 'heave', 'crush', 'wobble']),
   },
 
   // ---- minions
