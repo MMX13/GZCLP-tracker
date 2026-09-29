@@ -153,12 +153,13 @@ p { margin: 0 0 .5em; }
 .topbar { padding: 6px 8px 4px; background: linear-gradient(#2a2117, #211a12); border-bottom: 3px solid var(--ink); position: relative; z-index: 20; flex: none; }
 .tb-row { display: flex; align-items: center; gap: 6px; min-height: 40px; }
 .tb-row.second { min-height: 42px; margin-top: 2px; }
-.tb-stat { display: flex; align-items: center; gap: 4px; font-family: var(--font-h); font-size: 1.25rem; padding: 3px 9px 3px 6px; border-radius: 14px; background: #0005; }
+.tb-stat { display: flex; align-items: center; gap: 4px; font-family: var(--font-h); font-size: 1.15rem; padding: 3px 7px 3px 5px; border-radius: 14px; background: #0005; }
 .tb-stat small { font-size: .85rem; opacity: .7; margin-left: -2px; }
 .tb-stat.hp b { color: #ff8f8a; }
 .tb-stat.gold b { color: var(--gold); }
 .tb-stat.flash { animation: pop .4s; }
-.tb-act { flex: 1; min-width: 0; text-align: center; font-family: var(--font-h); line-height: 1.05; }
+.tb-act { flex: 1; min-width: 0; text-align: center; font-family: var(--font-h); line-height: 1.05; font-size: .95rem; }
+.tb-act span { white-space: nowrap; }
 .tb-act small { display: block; font-size: .72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tb-btn { position: relative; width: 44px; height: 44px; border-radius: 14px; background: #0005; display: grid; place-items: center; }
 .tb-btn small { position: absolute; right: 1px; bottom: 0; font: 700 .72rem var(--font-h); background: var(--ink); border-radius: 8px; padding: 0 4px; }

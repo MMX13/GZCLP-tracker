@@ -15,16 +15,17 @@
 .card-inner { height: 100%; display: flex; flex-direction: column; background: var(--cream); border-radius: .75em; overflow: hidden; border: .12em solid var(--frame); }
 .card-name {
   background: var(--frame); color: #fff; font-family: var(--font-h); font-weight: 600; font-size: 1.02em; line-height: 1.1;
-  text-align: center; padding: .42em .3em .3em 2.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 .1em 0 #0005;
+  text-align: center; padding: .42em .3em .3em 2.2em; flex: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 .1em 0 #0005;
 }
 .card-name.long { font-size: .84em; padding-top: .55em; }
-.card-art { flex: 0 0 39%; display: grid; place-items: center; background: radial-gradient(circle at 50% 55%, #fff 0, color-mix(in srgb, var(--frame) 22%, #fff4e0) 100%); border-bottom: .1em solid color-mix(in srgb, var(--frame) 60%, #000); }
+.card-art { flex: 0 1 39%; min-height: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 55%, #fff 0, color-mix(in srgb, var(--frame) 22%, #fff4e0) 100%); border-bottom: .1em solid color-mix(in srgb, var(--frame) 60%, #000); }
 .card-art svg { width: auto; height: 96%; max-width: 100%; }
-.card-text { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: .3em .45em; font-size: .9em; font-weight: 800; line-height: 1.16; }
+.card-text { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: .3em .45em; font-size: .9em; font-weight: 800; line-height: 1.16; min-height: 0; overflow: hidden; }
+.card.dense .card-text { font-size: .8em; line-height: 1.1; padding: .2em .3em; }
 .card-text .tone-up { color: #1f8a2e; }
 .card-text .tone-down { color: #c0392b; }
 .card-text .tone-keyword { color: #4a2a6a; font-weight: 900; text-decoration: underline dotted; text-underline-offset: .12em; }
-.card-type { font-size: .6em; text-transform: uppercase; letter-spacing: .06em; text-align: center; color: #7a6a55; padding: 0 0 .35em; font-weight: 800; }
+.card-type { flex: none; font-size: .6em; text-transform: uppercase; letter-spacing: .06em; text-align: center; color: #7a6a55; padding: 0 0 .35em; font-weight: 800; }
 .upg-star { color: #d99a00; }
 .card.upg .card-name { color: #dfffd0; }
 .gem { position: absolute; left: -.55em; width: 2.6em; height: 2.6em; display: grid; place-items: center; z-index: 3; filter: drop-shadow(0 .1em .1em #0007); }

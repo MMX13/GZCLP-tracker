@@ -197,7 +197,7 @@ export function Combat() {
     if (!v.playable) { setSel(null); return; }
     if (v.targeted) {
       if (alive.length === 1) play(uid, alive[0].uid);
-      else setSel(null);
+      else audio.play('click');
     } else play(uid);
   };
   const onDrop = (uid: number, enemy: string | null, far: boolean) => {

@@ -6,7 +6,7 @@
 .combat.shake { animation: shake .4s; }
 @keyframes shake { 0%, 100% { transform: translate(0) } 20% { transform: translate(-6px, 3px) } 40% { transform: translate(6px, -3px) } 60% { transform: translate(-4px, -2px) } 80% { transform: translate(4px, 2px) } }
 .field { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 4px 6px 0; }
-.enemies { display: flex; justify-content: center; align-items: flex-end; gap: 4px; padding-top: 2px; min-height: 0; }
+.enemies { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; padding-top: 2px; min-height: 0; }
 .enemy { position: relative; flex: 1 1 0; max-width: 150px; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; border-radius: 14px; padding: 2px 2px 4px; transition: opacity .4s, transform .3s; }
 .enemies[data-count='1'] .enemy { max-width: 210px; }
 .enemy.dead { opacity: 0; pointer-events: none; }
@@ -57,7 +57,7 @@
 @keyframes growpop { 40% { transform: scale(1.12); box-shadow: 0 0 14px #6be36b; } }
 @keyframes bloom { 30% { transform: scale(1.25); box-shadow: 0 0 24px 8px var(--gold); background: #f2c14e88 } }
 
-.target-hint { position: absolute; left: 50%; top: 40%; transform: translateX(-50%); background: var(--gold); color: var(--ink); font-family: var(--font-h); padding: 6px 14px; border-radius: 20px; border: 3px solid var(--ink); z-index: 10; display: flex; gap: 10px; align-items: center; white-space: nowrap; animation: pop .2s; }
+.target-hint { position: relative; align-self: center; flex: none; margin: 2px 0; background: var(--gold); color: var(--ink); font-family: var(--font-h); padding: 6px 14px; border-radius: 20px; border: 3px solid var(--ink); z-index: 10; display: flex; gap: 10px; align-items: center; white-space: nowrap; animation: pop .2s; }
 .target-hint button { background: var(--ink); color: var(--cream); border-radius: 12px; padding: 4px 10px; min-height: 32px; }
 
 .dock { display: flex; align-items: center; gap: 6px; padding: 5px 8px; background: linear-gradient(#0000, #0006); flex: none; }

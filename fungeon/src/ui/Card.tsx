@@ -14,7 +14,7 @@ export function CardFace({ v, w, dim, selected, className = '', style, testid, s
   const long = v.name.length > 12;
   return (
     <div
-      className={`card t-${v.type} r-${v.rarity} ${dim ? 'dim' : ''} ${selected ? 'sel' : ''} ${v.upgraded ? 'upg' : ''} ${flat ? 'flat' : ''} ${className}`}
+      className={`card t-${v.type} r-${v.rarity} ${dim ? 'dim' : ''} ${selected ? 'sel' : ''} ${v.upgraded ? 'upg' : ''} ${flat ? 'flat' : ''} ${v.text.length > 52 ? 'dense' : ''} ${className}`}
       style={{ ['--cw' as string]: `${w}px`, ...style }}
       data-testid={testid}
       data-card={v.id}

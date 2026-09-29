@@ -15,19 +15,26 @@ import type {
 
 export * from './types';
 
-export interface NewRunOptions {
-  seed?: string;
-  ascension?: number;
-}
+import { act as actImpl, createRun } from './run';
+import type { NewRunOptions } from './run';
+import { selectableNodes as selectableNodesImpl } from './map';
+import { buildCardView, buildEventView, buildGlossary, buildIntentView, buildStatusViews } from './views';
+import { restInfoImpl } from './run';
+import { deserialize as deserializeImpl, serialize as serializeImpl } from './save';
+
+export type { NewRunOptions };
+export * from './registry-public';
+export { engineLog } from './combat';
+export { hashString as hashSeedForTests } from './rng';
 
 /** Create a fresh run (screen = map, act 1, floor 0). */
-export function newRun(_opts: NewRunOptions = {}): RunState {
-  throw new Error('not implemented');
+export function newRun(opts: NewRunOptions = {}): RunState {
+  return createRun(opts);
 }
 
 /** Apply a player action. Returns the new state and the events to animate. Invalid actions return `error` and the input state. */
-export function act(_run: RunState, _action: Action): ActResult {
-  throw new Error('not implemented');
+export function act(run: RunState, action: Action): ActResult {
+  return actImpl(run, action);
 }
 
 /** Everything the UI needs to draw a card. Pass run (and optionally target) to get modified numbers in combat. */
@@ -57,13 +64,13 @@ export interface CardView {
   flavor?: string;
 }
 
-export function cardView(_card: CardInstance, _run?: RunState, _target?: EntityId): CardView {
-  throw new Error('not implemented');
+export function cardView(card: CardInstance, run?: RunState, target?: EntityId): CardView {
+  return buildCardView(card, run, target);
 }
 
 /** Upgraded preview of a card (for rest / upgrade screens). */
-export function upgradedView(_card: CardInstance): CardView {
-  throw new Error('not implemented');
+export function upgradedView(card: CardInstance): CardView {
+  return buildCardView({ ...card, upgraded: true });
 }
 
 export interface IntentView {
@@ -73,8 +80,8 @@ export interface IntentView {
   dmg?: number;
   hits?: number;
 }
-export function intentView(_run: RunState, _enemy: EntityId): IntentView | null {
-  throw new Error('not implemented');
+export function intentView(run: RunState, enemy: EntityId): IntentView | null {
+  return buildIntentView(run, enemy);
 }
 
 export interface StatusView {
@@ -87,8 +94,8 @@ export interface StatusView {
   showNumber: boolean;
 }
 /** Visible statuses on an entity (combat only). */
-export function statusViews(_run: RunState, _who: EntityId): StatusView[] {
-  throw new Error('not implemented');
+export function statusViews(run: RunState, who: EntityId): StatusView[] {
+  return buildStatusViews(run, who);
 }
 
 export interface EventView {
@@ -97,24 +104,38 @@ export interface EventView {
   text: string;
   choices: { label: string; disabled: string | null }[];
 }
-export function eventView(_run: RunState): EventView | null {
-  throw new Error('not implemented');
+export function eventView(run: RunState): EventView | null {
+  return buildEventView(run);
 }
 
 /** Map helpers: node ids the player can pick next. */
-export function selectableNodes(_run: RunState): string[] {
-  throw new Error('not implemented');
+export function selectableNodes(run: RunState): string[] {
+  return selectableNodesImpl(run);
 }
 
 /** Keyword glossary for tooltips (keyword/status names -> description). */
 export function glossary(): Record<string, string> {
-  throw new Error('not implemented');
+  return buildGlossary();
+}
+
+/** What the rest site offers right now (for enabling / labelling the buttons). */
+export interface RestInfo {
+  /** Nothing left to do here (already rested). */
+  done: boolean;
+  canHeal: boolean;
+  /** HP the Rest option would restore (already capped by missing HP). */
+  healAmount: number;
+  healPercent: number;
+  canUpgrade: boolean;
+}
+export function restInfo(run: RunState): RestInfo | null {
+  return restInfoImpl(run);
 }
 
 /** Serialise / restore (validated). Returns null for corrupt or incompatible saves. */
-export function serialize(_run: RunState): string {
-  throw new Error('not implemented');
+export function serialize(run: RunState): string {
+  return serializeImpl(run);
 }
-export function deserialize(_json: string): RunState | null {
-  throw new Error('not implemented');
+export function deserialize(json: string): RunState | null {
+  return deserializeImpl(json);
 }

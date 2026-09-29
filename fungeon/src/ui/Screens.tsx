@@ -1,7 +1,8 @@
 // Non-combat screens: rewards, rest, shop, event, treasure, boss relic, card select, victory, defeat.
 import { useMemo, useState } from 'react';
 import { Art, Icon, PlayerArt, audio } from '../art';
-import { cardView, eventView, upgradedView } from '../engine';
+import { cardView, eventView, restInfo, upgradedView } from '../engine';
+import type { RestInfo } from '../engine';
 import type { CardInstance, CardView, RunState, Screen } from '../engine';
 import { POTIONS, RELICS } from '../content';
 import { useGame } from './game';
@@ -43,7 +44,7 @@ export function RewardScreen({ run }: { run: RunState }) {
       </div>
       <div className="screen-foot"><Btn big testid="proceed" onClick={() => dispatch({ type: 'leaveRewards' })} icon="arrow">Proceed</Btn></div>
       {open && open.kind === 'card' && pick !== null && (
-        <Sheet title="Choose a card" onClose={() => setPick(null)} tall testid="card-reward">
+        <Sheet title="Choose a card" onClose={() => setPick(null)} testid="card-reward">
           <div className="choice-row">
             {open.options.map((c, ci) => {
               const v = safeView(c, run);
@@ -75,10 +76,11 @@ export function RewardScreen({ run }: { run: RunState }) {
 export function RestScreen({ run }: { run: RunState }) {
   const s = run.screen as Of<'rest'>;
   const { dispatch } = useGame();
-  const bonus = run.relics.reduce((a, r) => a + (RELICS[r.id]?.passive?.restHealBonus ?? 0), 0);
-  const noHeal = run.relics.some((r) => RELICS[r.id]?.passive?.noHealAtRest);
-  const pct = (run.ascension >= 5 ? 25 : 30) + bonus;
-  const heal = Math.min(run.maxHp - run.hp, Math.floor((run.maxHp * pct) / 100));
+  let info: RestInfo | null = null;
+  try { info = restInfo(run); } catch { /* ignore */ }
+  const noHeal = info ? !info.canHeal : false;
+  const pct = info?.healPercent ?? 30;
+  const heal = info?.healAmount ?? 0;
   return (
     <div className="screen rest" data-testid="rest">
       <h1>Dewdrop Glade</h1>
@@ -88,9 +90,9 @@ export function RestScreen({ run }: { run: RunState }) {
           <button className="big-choice" disabled={noHeal} onClick={() => dispatch({ type: 'rest', option: 'heal' })} data-testid="rest-heal">
             <Icon name="heart" size={40} />
             <b>Rest</b>
-            <span>{noHeal ? 'Something prevents resting.' : `Heal about ${heal} HP (${pct}%)`}</span>
+            <span>{noHeal ? 'Cannot heal here.' : `Heal ${heal} HP (${pct}%)`}</span>
           </button>
-          <button className="big-choice" onClick={() => dispatch({ type: 'rest', option: 'upgrade' })} data-testid="rest-upgrade">
+          <button className="big-choice" disabled={info ? !info.canUpgrade : false} onClick={() => dispatch({ type: 'rest', option: 'upgrade' })} data-testid="rest-upgrade">
             <Icon name="star" size={40} />
             <b>Nurture</b>
             <span>Upgrade a card</span>
@@ -330,7 +332,7 @@ export function DefeatScreen({ run }: { run: RunState }) {
   const { toTitle } = useGame();
   return (
     <div className="screen end defeat" data-testid="defeat">
-      <div className="ghost-pip"><PlayerArt size={120} state="dead" /></div>
+      <div className="ghost-pip"><PlayerArt size={120} /></div>
       <h1>You have been composted.</h1>
       <p className="center cause">{s.cause || 'Felled by the forest.'}</p>
       <p className="center muted">Reached Act {run.act} ({ACT_NAMES[run.act]}), floor {run.floor}.</p>

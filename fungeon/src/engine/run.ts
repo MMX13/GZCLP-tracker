@@ -1,7 +1,7 @@
 // Run flow: newRun and the act() reducer (the only mutator of RunState).
-import type { Action, ActResult, CardInstance, EncounterDef, GameEvent, MapNode, RunState } from './types';
+import type { Action, ActResult, CardInstance, EncounterDef, GameEvent, MapNode, RunState, Screen } from './types';
 import { PLAYER } from './types';
-import { allEncounters, allEnemies, findEncounter, findEvent, allEvents, findPotion, getCard } from './registry';
+import { allEncounters, allEnemies, allEvents, findEnemy, findEvent, findPotion, findRelic, getCard } from './registry';
 import { hashString, initStreams, pick, randomSeed, stream, weightedPick } from './rng';
 import { generateMap, selectableNodes } from './map';
 import {
@@ -21,7 +21,6 @@ import { finishCombat, grantPotion, grantRelic, randomRelicId, BASE_POTION_SLOTS
 import { generateShop, removalsUsed, setRemovalsUsed, shopBuy } from './shop';
 import { makeEventCtx, resolvePage, startPageId, transformCard } from './events';
 import { canUpgrade } from './cardutil';
-import { findEnemy } from './registry';
 
 export interface NewRunOptions {
   seed?: string;
@@ -365,12 +364,26 @@ function advanceAct(run: RunState, ev: GameEvent[]): string | null {
 // ---------------------------------------------------------------------------------------------------------------
 // Rest, shop removal, treasure, proceed
 
+export function restInfoImpl(run: RunState): { done: boolean; canHeal: boolean; healAmount: number; healPercent: number; canUpgrade: boolean } | null {
+  const s = run.screen;
+  if (s.kind !== 'rest') return null;
+  const blocked = run.relics.some((r) => noHealAtRest(r.id));
+  const healPercent = (run.ascension >= 5 ? 25 : 30) + passiveSum(run, 'restHealBonus');
+  return {
+    done: s.done,
+    canHeal: !s.done && !blocked,
+    healAmount: blocked ? 0 : Math.min(run.maxHp - run.hp, Math.floor((run.maxHp * healPercent) / 100)),
+    healPercent,
+    canUpgrade: !s.done && run.deck.some((c) => canUpgrade(c, getCard(c.id))),
+  };
+}
+
 function doRest(run: RunState, option: 'heal' | 'upgrade', ev: GameEvent[]): string | null {
   const s = run.screen;
   if (s.kind !== 'rest') return 'There is nothing to rest at.';
   if (s.done) return 'You already rested here.';
   if (option === 'heal') {
-    if (run.relics.some((r) => r.id && noHealAtRest(r.id))) return 'You cannot rest to heal.';
+    if (run.relics.some((r) => noHealAtRest(r.id))) return 'You cannot rest to heal.';
     const pct = (run.ascension >= 5 ? 25 : 30) + passiveSum(run, 'restHealBonus');
     const amount = Math.min(run.maxHp - run.hp, Math.floor((run.maxHp * pct) / 100));
     if (amount > 0) {
@@ -397,7 +410,6 @@ function doRest(run: RunState, option: 'heal' | 'upgrade', ev: GameEvent[]): str
   return 'Unknown rest option.';
 }
 
-import { findRelic } from './registry';
 function noHealAtRest(id: string): boolean {
   return !!findRelic(id)?.passive?.noHealAtRest;
 }
@@ -543,16 +555,15 @@ function defeatFromEvent(run: RunState, ev: GameEvent[], eventId?: string): void
 }
 
 /** Apply the return value of an event pick / onCardSelect. `evScreen` is the event screen that was active. */
-function finishEventStep(run: RunState, evScreen: { kind: 'event'; event: { page: string } } & object, ret: string | null): void {
+function finishEventStep(run: RunState, evScreen: Extract<Screen, { kind: 'event' }>, ret: string | null): void {
   if (run.screen !== evScreen) return; // the effect opened another screen (fight, rewards, card select)
   if (ret === 'screen') return;
   if (ret === null) {
     run.screen = { kind: 'map' };
     return;
   }
-  const s = evScreen as { event: { id: string; page: string } };
-  const def = findEvent(s.event.id);
-  if (def && def.pages[ret]) s.event.page = ret;
+  const def = findEvent(evScreen.event.id);
+  if (def && def.pages[ret]) evScreen.event.page = ret;
   else run.screen = { kind: 'map' };
 }
 

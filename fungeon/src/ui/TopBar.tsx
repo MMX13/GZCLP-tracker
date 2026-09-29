@@ -69,8 +69,8 @@ export function TopBar() {
         <div className="tb-stat hp" data-testid="hp"><Icon name="heart" size={22} /><b>{hp}</b><small>/{maxHp}</small></div>
         <div className={`tb-stat gold ${fx.goldFlash ? 'flash' : ''}`} key={`g${fx.goldFlash}`} data-testid="gold"><Icon name="acorn" size={22} /><b>{run.gold}</b></div>
         <div className="tb-act" data-testid="floor">
-          <span>Act {run.act}</span>
-          <small>{ACT_NAMES[run.act]} · F{run.floor}</small>
+          <span>Act {run.act} · F{run.floor}</span>
+          <small>{ACT_NAMES[run.act]}</small>
         </div>
         <button className="tb-btn" onClick={() => setDeck(true)} data-testid="deck-btn" aria-label="Deck">
           <Icon name="deck" size={24} /><small>{run.deck.length}</small>

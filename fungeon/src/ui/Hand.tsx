@@ -33,7 +33,7 @@ export function Hand({ views, sel, disabled, onTap, onDrop, onZoom, onHover, onD
   const n = views.length;
   const cw = Math.max(88, Math.min(132, Math.round(W * 0.3)));
   const ch = Math.round(cw * 1.42);
-  const step = n <= 1 ? 0 : Math.min(cw * 0.94, (W - cw - 10) / (n - 1));
+  const step = n <= 1 ? 0 : Math.min(cw * 0.94, (W - cw - 26) / (n - 1));
   const x0 = (W - (cw + step * (n - 1))) / 2;
   const [drag, setDrag] = useState<DragState | null>(null);
   const st = useRef<{ uid: number; x: number; y: number; id: number; timer: number; moved: boolean; long: boolean } | null>(null);
@@ -85,15 +85,15 @@ export function Hand({ views, sel, disabled, onTap, onDrop, onZoom, onHover, onD
   };
 
   return (
-    <div className="hand" ref={ref} style={{ height: ch + 34 }} data-testid="hand">
+    <div className="hand" ref={ref} style={{ height: ch + 20 }} data-testid="hand">
       {views.map((v, i) => {
         const off = i - (n - 1) / 2;
         const rot = off * (n > 7 ? 2.2 : 3.4);
         const dropY = Math.abs(off) ** 2 * (n > 7 ? 1 : 1.8);
         const isSel = sel === v.uid;
         const isDrag = drag?.uid === v.uid;
-        let tf = `translateY(${dropY + 24}px) rotate(${rot}deg)`;
-        if (isDrag) tf = `translate(${drag!.dx}px, ${drag!.dy + 24}px) scale(1.12)`;
+        let tf = `translateY(${dropY + 6}px) rotate(${rot}deg)`;
+        if (isDrag) tf = `translate(${drag!.dx}px, ${drag!.dy + 6}px) scale(1.12)`;
         else if (isSel) tf = `translateY(-14px) scale(1.14)`;
         return (
           <div

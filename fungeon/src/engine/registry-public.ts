@@ -1,0 +1,21 @@
+// Re-exports of the registry for tools / tests (production code inside the engine imports ./registry directly).
+export {
+  allCards,
+  allEncounters,
+  allEnemies,
+  allEvents,
+  allPotions,
+  allRelics,
+  allStatuses,
+  clearRegistry,
+  getCard,
+  pipCards,
+  registerCard,
+  registerEncounter,
+  registerEnemy,
+  registerEvent,
+  registerPotion,
+  registerRelic,
+  registerStatus,
+  resetRegistry,
+} from './registry';

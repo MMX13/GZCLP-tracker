@@ -2,7 +2,8 @@
 .screen h1 { text-align: center; font-size: 1.7rem; text-shadow: 0 3px 0 var(--ink); }
 .screen h3 { color: var(--gold); font-size: 1.1rem; margin-top: 4px; }
 .screen-foot { margin-top: auto; padding-top: 10px; display: flex; justify-content: center; }
-.screen-foot .btn { min-width: 200px; }
+.screen-foot { gap: 10px; }
+.screen-foot .btn { min-width: 140px; }
 .screen-foot.sticky { position: sticky; bottom: -18px; background: linear-gradient(#0000, #1f1a14 40%); padding-bottom: 14px; }
 .big-text { font: 600 1.3rem var(--font-h); }
 
