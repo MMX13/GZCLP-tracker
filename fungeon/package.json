@@ -21,6 +21,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "esbuild": "^0.27.0",
+    "playwright-core": "1.56",
     "tsx": "^4.21.0",
     "typescript": "^5.9.0"
   }
