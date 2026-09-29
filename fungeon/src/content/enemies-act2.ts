@@ -5,23 +5,23 @@ import { atk, blk, crossed, cyc, fx, summon } from './enemies-util';
 
 export const ACT2_ENEMIES: EnemyDef[] = [
   {
-    id: 'moth', name: 'Dusty Moth', act: 2, tier: 'normal', hp: [40, 46], art: 'moth',
+    id: 'moth', name: 'Dusty Moth', act: 2, tier: 'normal', hp: [32, 37], art: 'moth',
     moves: {
-      dust: atk('Wing Dust', 7, 1, (a) => a.apply(PLAYER, S.wilted, 2)),
-      flutter: atk('Flutter Slam', 14),
+      dust: atk('Wing Dust', 6, 1, (a) => a.apply(PLAYER, S.wilted, 2)),
+      flutter: atk('Flutter Slam', 12),
     },
     ai: (c) => cyc(c, ['dust', 'dust', 'flutter']),
   },
   {
-    id: 'cave_cricket', name: 'Cave Cricket', act: 2, tier: 'normal', hp: [44, 50], art: 'cave_cricket',
+    id: 'cave_cricket', name: 'Cave Cricket', act: 2, tier: 'normal', hp: [35, 40], art: 'cave_cricket',
     moves: {
-      brace: blk('Brace', 10),
-      hop: atk('Big Hop', 17),
+      brace: blk('Brace', 8),
+      hop: atk('Big Hop', 14),
     },
     ai: (c) => cyc(c, ['brace', 'hop']),
   },
   {
-    id: 'slime_mold', name: 'Slime Mold', act: 2, tier: 'normal', hp: [50, 56], art: 'slime_mold',
+    id: 'slime_mold', name: 'Slime Mold', act: 2, tier: 'normal', hp: [40, 45], art: 'slime_mold',
     passiveText: 'When killed, splits into 2 Slimelets.',
     hooks: {
       onEnemyDeath: (api, _n, enemy) => {
@@ -30,41 +30,41 @@ export const ACT2_ENEMIES: EnemyDef[] = [
       },
     },
     moves: {
-      smother: atk('Smother', 9, 1, (a) => a.apply(PLAYER, S.soggy, 2)),
-      glob: atk('Glob', 13),
-      ooze: blk('Ooze', 8),
+      smother: atk('Smother', 8, 1, (a) => a.apply(PLAYER, S.soggy, 2)),
+      glob: atk('Glob', 10),
+      ooze: blk('Ooze', 7),
     },
     ai: (c) => cyc(c, ['smother', 'glob', 'ooze']),
   },
   {
-    id: 'glow_worm', name: 'Glow Worm', act: 2, tier: 'normal', hp: [36, 40], art: 'glow_worm',
-    passiveText: 'Its glow gives every enemy +2 Might.',
+    id: 'glow_worm', name: 'Glow Worm', act: 2, tier: 'normal', hp: [29, 32], art: 'glow_worm',
+    passiveText: 'Its glow gives every enemy +1 Might.',
     moves: {
-      glow: fx('Glow', ['buff'], (a) => a.enemies().forEach((e) => a.apply(e.uid, S.might, 2))),
-      bite: atk('Nibble', 6),
+      glow: fx('Glow', ['buff'], (a) => a.enemies().forEach((e) => a.apply(e.uid, S.might, 1))),
+      bite: atk('Nibble', 5),
     },
     ai: (c) => cyc(c, ['glow', 'bite', 'bite']),
   },
   {
-    id: 'bat', name: 'Pipistrelle', act: 2, tier: 'normal', hp: [42, 46], art: 'bat',
+    id: 'bat', name: 'Pipistrelle', act: 2, tier: 'normal', hp: [34, 37], art: 'bat',
     passiveText: 'Drain heals it for the HP it takes from you.',
     moves: {
-      flurry: atk('Flurry', 4, 3),
+      flurry: atk('Flurry', 3, 3),
       drain: {
-        name: 'Drain', intents: ['attack', 'buff'], dmg: 7, hits: 1,
-        run: (a, s) => { const d = a.attack(PLAYER, 7); if (d > 0) a.heal(s.uid, d); },
+        name: 'Drain', intents: ['attack', 'buff'], dmg: 6, hits: 1,
+        run: (a, s) => { const d = a.attack(PLAYER, 6); if (d > 0) a.heal(s.uid, d); },
       },
     },
     ai: (c) => cyc(c, ['flurry', 'drain', 'flurry']),
   },
   {
-    id: 'centipede', name: 'Centipede', act: 2, tier: 'normal', hp: [56, 62], art: 'centipede',
+    id: 'centipede', name: 'Centipede', act: 2, tier: 'normal', hp: [45, 50], art: 'centipede',
     onSpawn: (a, s) => a.apply(s.uid, S.prickly, 2),
     passiveText: 'Prickly 2: hitting it hurts you back for 2.',
     moves: {
-      skitter: atk('Skitter', 3, 5),
-      coil: { name: 'Coil', intents: ['block', 'buff'], run: (a, s) => { a.gainBlock(10, false); a.apply(s.uid, S.prickly, 1); } },
-      sting: atk('Sting', 8, 1, (a) => a.apply(PLAYER, S.wilted, 1)),
+      skitter: atk('Skitter', 3, 4),
+      coil: { name: 'Coil', intents: ['block', 'buff'], run: (a, s) => { a.gainBlock(8, false); a.apply(s.uid, S.prickly, 1); } },
+      sting: atk('Sting', 7, 1, (a) => a.apply(PLAYER, S.wilted, 1)),
     },
     ai: (c) => cyc(c, ['sting', 'skitter', 'coil']),
   },
@@ -106,7 +106,7 @@ export const ACT2_ENEMIES: EnemyDef[] = [
 
   // ---- bosses
   {
-    id: 'mothmother', name: 'Mothmother', act: 2, tier: 'boss', hp: [295, 305], art: 'mothmother', scale: 1.5,
+    id: 'mothmother', name: 'Mothmother', act: 2, tier: 'boss', hp: [250, 260], art: 'mothmother', scale: 1.5,
     passiveText: 'Calls Mothlings. At half HP she is drawn to the lamp: Growing 1 and a frenzy of wing-beats.',
     hooks: {
       onHpLoss: (api) => {
@@ -118,14 +118,14 @@ export const ACT2_ENEMIES: EnemyDef[] = [
     },
     moves: {
       call: { name: 'Lullaby Call', intents: ['summon', 'block'], run: (a) => { a.gainBlock(10, false); summon(a, 'mothling', 2); } },
-      storm: atk('Dust Storm', 9, 1, (a) => { a.apply(PLAYER, S.wilted, 2); a.apply(PLAYER, S.brittle, 2); }),
+      storm: atk('Dust Storm', 8, 1, (a) => { a.apply(PLAYER, S.wilted, 2); a.apply(PLAYER, S.brittle, 2); }),
       swoop: atk('Swoop', 17),
       frenzy: atk('Lamp Frenzy', 6, 4),
     },
     ai: (c) => (c.self.mem.frenzy ? cyc(c, ['frenzy', 'storm', 'call', 'swoop']) : cyc(c, ['call', 'storm', 'swoop', 'storm'])),
   },
   {
-    id: 'slime_colossus', name: 'Ooze Colossus', act: 2, tier: 'boss', hp: [305, 315], art: 'slime_colossus', scale: 1.6,
+    id: 'slime_colossus', name: 'Ooze Colossus', act: 2, tier: 'boss', hp: [320, 330], art: 'slime_colossus', scale: 1.6,
     passiveText: 'Absorbs Slimelets: each one gives it 8 Block and 1 Might. Kill them first! Enrages at half HP (+2 Might).',
     hooks: {
       onHpLoss: (api) => {
@@ -156,8 +156,8 @@ export const ACT2_ENEMIES: EnemyDef[] = [
 
   // ---- minions
   {
-    id: 'slimelet', name: 'Slimelet', act: 2, tier: 'minion', hp: [9, 11], art: 'slimelet',
-    moves: { dribble: atk('Dribble', 4), splat: atk('Splat', 6) },
+    id: 'slimelet', name: 'Slimelet', act: 2, tier: 'minion', hp: [6, 8], art: 'slimelet',
+    moves: { dribble: atk('Dribble', 3), splat: atk('Splat', 5) },
     ai: (c) => cyc(c, ['dribble', 'splat']),
   },
   {

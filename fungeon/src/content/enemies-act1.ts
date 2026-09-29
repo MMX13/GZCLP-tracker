@@ -104,18 +104,23 @@ export const ACT1_ENEMIES: EnemyDef[] = [
 
   // ---- bosses
   {
-    id: 'gloopius', name: 'Grand Slug Gloopius', act: 1, tier: 'boss', hp: [165, 175], art: 'gloopius', scale: 1.5,
-    passiveText: 'Splits into 2 Soggy Slugs when brought to half HP, then flails wildly.',
+    id: 'gloopius', name: 'Grand Slug Gloopius', act: 1, tier: 'boss', hp: [140, 150], art: 'gloopius', scale: 1.5,
+    passiveText: 'At half HP it splits off 2 small Soggy Slugs (losing 20% of its remaining HP), then flails wildly. Slime Wave only makes you Soggy every other time.',
     hooks: {
       onHpLoss: (api) => {
         const s = crossed(api, 'split', 0.5);
         if (!s) return;
         api.say(s.uid, 'Splish-split!');
-        summon(api, 'slug', 2);
+        s.hp = Math.max(1, Math.ceil(s.hp * 0.8));
+        for (let i = 0; i < 2; i++) {
+          if (api.enemies().length >= 5) break;
+          const slug = api.spawnEnemy('slug', 'right');
+          if (slug) { slug.hp = 16; slug.maxHp = 16; }
+        }
       },
     },
     moves: {
-      wave: atk('Slime Wave', 7, 1, (a) => a.apply(PLAYER, S.soggy, 2)),
+      wave: atk('Slime Wave', 7, 1, (a, s) => { if (s.history.filter((h) => h === 'wave').length % 2 === 1) a.apply(PLAYER, S.soggy, 2); }),
       glop: atk('Great Glop', 13),
       ooze: blk('Ooze Up', 12),
       flail: atk('Flail', 7, 2),
@@ -124,7 +129,7 @@ export const ACT1_ENEMIES: EnemyDef[] = [
   },
   {
     id: 'toad_king', name: 'Old King Warts', act: 1, tier: 'boss', hp: [175, 185], art: 'toad_king', scale: 1.5,
-    passiveText: 'At half HP he calls his royal guard: 2 Toadlets. Tongue grabs stuff Slime into your deck.',
+    passiveText: 'At half HP he calls his royal guard: 2 Toadlets. His tongue grabs at your deck and stuffs it with Slime.',
     hooks: {
       onHpLoss: (api) => {
         const s = crossed(api, 'court', 0.5);

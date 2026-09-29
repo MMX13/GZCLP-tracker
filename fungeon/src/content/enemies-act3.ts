@@ -22,15 +22,15 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['puff', 'bud', 'cough']),
   },
   {
-    id: 'rot_rat', name: 'Rot Rat', act: 3, tier: 'normal', hp: [46, 52], art: 'rot_rat',
+    id: 'rot_rat', name: 'Rot Rat', act: 3, tier: 'normal', hp: [40, 45], art: 'rot_rat',
     moves: {
       plague: atk('Plague Bite', 9, 1, (a) => a.apply(PLAYER, S.rot, 2)),
-      skitter: atk('Skitter', 5, 3),
+      skitter: atk('Skitter', 4, 3),
     },
     ai: (c) => cyc(c, ['plague', 'skitter', 'skitter']),
   },
   {
-    id: 'blighted_sprout', name: 'Blighted Sprout', act: 3, tier: 'normal', hp: [58, 66], art: 'blighted_sprout',
+    id: 'blighted_sprout', name: 'Blighted Sprout', act: 3, tier: 'normal', hp: [52, 58], art: 'blighted_sprout',
     onSpawn: (a, s) => a.apply(s.uid, S.growing, 1),
     passiveText: 'Growing 1: gains +1 Might every turn. Do not let it sit.',
     moves: {
@@ -48,7 +48,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['bite', 'buzz', 'bite']),
   },
   {
-    id: 'zombie_snail', name: 'Zombie Snail', act: 3, tier: 'normal', hp: [68, 74], art: 'zombie_snail',
+    id: 'zombie_snail', name: 'Zombie Snail', act: 3, tier: 'normal', hp: [62, 68], art: 'zombie_snail',
     onSpawn: (a, s) => a.apply(s.uid, S.shelled, 3),
     passiveText: 'Shelled 3. Rises again once, at half HP, when first killed.',
     hooks: {
@@ -82,7 +82,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
 
   // ---- elites
   {
-    id: 'cordyceps_knight', name: 'Cordyceps Knight', act: 3, tier: 'elite', hp: [188, 198], art: 'cordyceps_knight', scale: 1.3,
+    id: 'cordyceps_knight', name: 'Cordyceps Knight', act: 3, tier: 'elite', hp: [165, 174], art: 'cordyceps_knight', scale: 1.3,
     onSpawn: (a, s) => a.apply(s.uid, S.prickly, 3),
     passiveText: 'Prickly 3: hitting it hurts. Spore casting spawns Sporelings and adds Prickly.',
     moves: {
@@ -107,7 +107,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['mimic_rot', 'mimic_block', 'chop', 'mimic_plant', 'chop']),
   },
   {
-    id: 'mold_hydra', name: 'Mold Hydra', act: 3, tier: 'elite', hp: [92, 100], art: 'mold_hydra', scale: 1.4,
+    id: 'mold_hydra', name: 'Mold Hydra', act: 3, tier: 'elite', hp: [81, 88], art: 'mold_hydra', scale: 1.4,
     passiveText: 'The middle head. Each fallen head makes it +2 Might. Roars give every head Regrow 5.',
     hooks: {
       onEnemyDeath: (api, _n, enemy) => {
@@ -128,7 +128,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
 
   // ---- bosses
   {
-    id: 'amanita_queen', name: 'Queen Amanita', act: 3, tier: 'boss', hp: [395, 405], art: 'amanita_queen', scale: 1.6,
+    id: 'amanita_queen', name: 'Queen Amanita', act: 3, tier: 'boss', hp: [363, 373], art: 'amanita_queen', scale: 1.6,
     passiveText: 'Phase 1: holds court (Sporelings). At half HP she Blooms: Growing 1, Block, and vicious barrages.',
     hooks: {
       onHpLoss: (api) => {
@@ -150,7 +150,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => (c.self.mem.bloom ? cyc(c, ['crown', 'barrage', 'kiss', 'storm']) : cyc(c, ['decree', 'scepter', 'storm', 'scepter'])),
   },
   {
-    id: 'blight_heart', name: 'The Blight Heart', act: 3, tier: 'boss', hp: [425, 435], art: 'blight_heart', scale: 1.7,
+    id: 'blight_heart', name: 'The Blight Heart', act: 3, tier: 'boss', hp: [375, 383], art: 'blight_heart', scale: 1.7,
     onSpawn: (a, s) => a.apply(s.uid, S.shelled, 3),
     passiveText: 'Shelled 3. Every third turn: a Rot Wave (gathering shows as a buff). At half HP it spawns Mold Buds and its waves double down.',
     hooks: {
@@ -164,10 +164,10 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     moves: {
       pulse: atk('Pulse', 11, 1, (a) => a.addCardToPlayer('mold', 'discard', 1)),
       gather: { name: 'Gather Blight', intents: ['block', 'buff'], run: (a, s) => { a.gainBlock(15, false); a.apply(s.uid, S.might, 1); } },
-      wave: atk('Rot Wave', 8, 1, (a) => a.apply(PLAYER, S.rot, 5)),
+      wave: atk('Rot Wave', 8, 1, (a) => a.apply(PLAYER, S.rot, 4)),
       pulse2: atk('Hard Pulse', 15, 1, (a) => a.addCardToPlayer('mold', 'discard', 1)),
       gather2: { name: 'Spawn Buds', intents: ['summon', 'block'], run: (a) => { a.gainBlock(15, false); summon(a, 'mold_bud', 2); } },
-      wave2: atk('Rot Tsunami', 10, 1, (a) => a.apply(PLAYER, S.rot, 7)),
+      wave2: atk('Rot Tsunami', 10, 1, (a) => a.apply(PLAYER, S.rot, 6)),
     },
     ai: (c) => (c.self.mem.corrupt ? cyc(c, ['pulse2', 'gather2', 'wave2']) : cyc(c, ['pulse', 'gather', 'wave'])),
   },
@@ -182,7 +182,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['puff', 'fume']),
   },
   {
-    id: 'hydra_head', name: 'Hydra Head', act: 3, tier: 'minion', hp: [50, 56], art: 'hydra_head',
+    id: 'hydra_head', name: 'Hydra Head', act: 3, tier: 'minion', hp: [44, 49], art: 'hydra_head',
     onSpawn: (a, s) => a.apply(s.uid, S.regrow, 2),
     passiveText: 'Regrows. Part of the Mold Hydra.',
     moves: {

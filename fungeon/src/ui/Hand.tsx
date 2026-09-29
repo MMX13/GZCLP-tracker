@@ -34,7 +34,9 @@ export function Hand({ views, sel, disabled, onTap, onDrop, onZoom, onHover, onD
   const short = typeof window !== 'undefined' && window.innerHeight < 700;
   const cw = Math.max(88, Math.min(132, Math.round(W * (short ? 0.28 : 0.3))));
   const ch = Math.round(cw * 1.42);
-  const step = n <= 1 ? 0 : Math.min(cw * 0.9, (W - cw - 28) / (n - 1));
+  const perRot = n <= 1 ? 0 : Math.min(3.4, 9 / ((n - 1) / 2));
+  const margin = 8 + Math.ceil(ch * Math.sin(((((n - 1) / 2) * perRot) * Math.PI) / 180));
+  const step = n <= 1 ? 0 : Math.min(cw * 0.9, (W - cw - 2 * margin) / (n - 1));
   const x0 = (W - (cw + step * (n - 1))) / 2;
   const [drag, setDrag] = useState<DragState | null>(null);
   const st = useRef<{ uid: number; x: number; y: number; id: number; timer: number; moved: boolean; long: boolean } | null>(null);
@@ -89,7 +91,7 @@ export function Hand({ views, sel, disabled, onTap, onDrop, onZoom, onHover, onD
     <div className="hand" ref={ref} style={{ height: ch + 20 }} data-testid="hand">
       {views.map((v, i) => {
         const off = i - (n - 1) / 2;
-        const rot = off * (n > 7 ? 2.2 : 3.4);
+        const rot = off * perRot;
         const dropY = Math.abs(off) ** 2 * (n > 7 ? 1 : 1.8);
         const isSel = sel === v.uid;
         const isDrag = drag?.uid === v.uid;

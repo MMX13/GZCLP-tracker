@@ -11,7 +11,7 @@ const TYPE_LABEL: Record<string, string> = { attack: 'Attack', skill: 'Skill', p
 export function CardFace({ v, w, dim, selected, className = '', style, testid, showReason, flat }: {
   v: CardView; w: number; dim?: boolean; selected?: boolean; className?: string; style?: CSSProperties; testid?: string; showReason?: boolean; flat?: boolean;
 }) {
-  const nameEm = Math.min(1.04, 12.2 / Math.max(1, v.name.length));
+  const nameEm = Math.max(0.8, Math.min(1.04, 14.5 / Math.max(1, v.name.length)));
   return (
     <div
       className={`card t-${v.type} r-${v.rarity} ${dim ? 'dim' : ''} ${selected ? 'sel' : ''} ${v.upgraded ? 'upg' : ''} ${flat ? 'flat' : ''} ${v.text.length > 52 ? 'dense' : ''} ${className}`}
