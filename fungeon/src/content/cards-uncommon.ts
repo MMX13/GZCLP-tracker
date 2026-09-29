@@ -43,7 +43,7 @@ export const UNCOMMON_CARDS: CardDef[] = [
     play: (api, v) => { api.apply(PLAYER, 'pw_decomposer', v.n); },
   },
   {
-    id: 'slow_simmer', name: 'Slow Simmer', type: 'power', rarity: 'uncommon', cost: 2, target: 'none',
+    id: 'slow_simmer', name: 'Slow Simmer', type: 'power', rarity: 'uncommon', cost: 3, target: 'none',
     vals: { n: 2 }, up: { n: 3 }, text: 'At the start of your turn, apply {n} Rot to ALL enemies.', art: 'toxic-drip',
     play: (api, v) => { api.apply(PLAYER, 'pw_slow_simmer', v.n); },
   },
@@ -139,7 +139,7 @@ export const UNCOMMON_CARDS: CardDef[] = [
     play: (api, v) => { for (let i = 0; i < v.x; i++) api.attackAll(v.dmg); },
   },
   {
-    id: 'foragers_pick', name: "Forager's Pick", type: 'skill', rarity: 'uncommon', cost: 1, target: 'none',
+    id: 'foragers_pick', name: "Forager's Pick", type: 'skill', rarity: 'uncommon', cost: 0, target: 'none',
     vals: { up: 0 }, up: { up: 1 },
     text: 'Choose 1 of 3 random cards. It costs 0 this turn.', upText: 'Choose 1 of 3 random upgraded cards. It costs 0 this turn.',
     keywords: ['compost'], art: 'forage',

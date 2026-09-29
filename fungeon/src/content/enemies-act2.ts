@@ -21,7 +21,7 @@ export const ACT2_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['brace', 'hop']),
   },
   {
-    id: 'slime_mold', name: 'Slime Mold', act: 2, tier: 'normal', hp: [40, 45], art: 'slime_mold',
+    id: 'slime_mold', name: 'Slime Mold', act: 2, tier: 'normal', hp: [34, 38], art: 'slime_mold',
     passiveText: 'When killed, splits into 2 Slimelets.',
     hooks: {
       onEnemyDeath: (api, _n, enemy) => {
@@ -30,7 +30,7 @@ export const ACT2_ENEMIES: EnemyDef[] = [
       },
     },
     moves: {
-      smother: atk('Smother', 8, 1, (a) => a.apply(PLAYER, S.soggy, 2)),
+      smother: atk('Smother', 7, 1, (a) => a.apply(PLAYER, S.soggy, 2)),
       glob: atk('Glob', 10),
       ooze: blk('Ooze', 7),
     },
@@ -106,7 +106,7 @@ export const ACT2_ENEMIES: EnemyDef[] = [
 
   // ---- bosses
   {
-    id: 'mothmother', name: 'Mothmother', act: 2, tier: 'boss', hp: [250, 260], art: 'mothmother', scale: 1.5,
+    id: 'mothmother', name: 'Mothmother', act: 2, tier: 'boss', hp: [225, 234], art: 'mothmother', scale: 1.5,
     passiveText: 'Calls Mothlings. At half HP she is drawn to the lamp: Growing 1 and a frenzy of wing-beats.',
     hooks: {
       onHpLoss: (api) => {
@@ -125,7 +125,7 @@ export const ACT2_ENEMIES: EnemyDef[] = [
     ai: (c) => (c.self.mem.frenzy ? cyc(c, ['frenzy', 'storm', 'call', 'swoop']) : cyc(c, ['call', 'storm', 'swoop', 'storm'])),
   },
   {
-    id: 'slime_colossus', name: 'Ooze Colossus', act: 2, tier: 'boss', hp: [320, 330], art: 'slime_colossus', scale: 1.6,
+    id: 'slime_colossus', name: 'Ooze Colossus', act: 2, tier: 'boss', hp: [365, 375], art: 'slime_colossus', scale: 1.6,
     passiveText: 'Absorbs Slimelets: each one gives it 8 Block and 1 Might. Kill them first! Enrages at half HP (+2 Might).',
     hooks: {
       onHpLoss: (api) => {

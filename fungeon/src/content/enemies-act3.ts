@@ -5,7 +5,7 @@ import { atk, blk, crossed, cyc, fx, summon } from './enemies-util';
 
 export const ACT3_ENEMIES: EnemyDef[] = [
   {
-    id: 'mold_puff', name: 'Mold Puff', act: 3, tier: 'normal', hp: [44, 50], art: 'mold_puff',
+    id: 'mold_puff', name: 'Mold Puff', act: 3, tier: 'normal', hp: [36, 41], art: 'mold_puff',
     passiveText: 'When killed, it explodes: 5 damage to you and a Mold in your discard.',
     hooks: {
       onEnemyDeath: (api, _n, enemy) => {
@@ -17,12 +17,12 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     moves: {
       puff: atk('Mold Puff', 8, 1, (a) => a.addCardToPlayer('mold', 'discard', 1)),
       bud: fx('Sporulate', ['summon'], (a) => summon(a, 'mold_bud', 1)),
-      cough: atk('Spore Cough', 12),
+      cough: atk('Spore Cough', 10),
     },
     ai: (c) => cyc(c, ['puff', 'bud', 'cough']),
   },
   {
-    id: 'rot_rat', name: 'Rot Rat', act: 3, tier: 'normal', hp: [40, 45], art: 'rot_rat',
+    id: 'rot_rat', name: 'Rot Rat', act: 3, tier: 'normal', hp: [36, 40], art: 'rot_rat',
     moves: {
       plague: atk('Plague Bite', 9, 1, (a) => a.apply(PLAYER, S.rot, 2)),
       skitter: atk('Skitter', 4, 3),
@@ -30,7 +30,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['plague', 'skitter', 'skitter']),
   },
   {
-    id: 'blighted_sprout', name: 'Blighted Sprout', act: 3, tier: 'normal', hp: [52, 58], art: 'blighted_sprout',
+    id: 'blighted_sprout', name: 'Blighted Sprout', act: 3, tier: 'normal', hp: [48, 53], art: 'blighted_sprout',
     onSpawn: (a, s) => a.apply(s.uid, S.growing, 1),
     passiveText: 'Growing 1: gains +1 Might every turn. Do not let it sit.',
     moves: {
@@ -48,7 +48,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['bite', 'buzz', 'bite']),
   },
   {
-    id: 'zombie_snail', name: 'Zombie Snail', act: 3, tier: 'normal', hp: [62, 68], art: 'zombie_snail',
+    id: 'zombie_snail', name: 'Zombie Snail', act: 3, tier: 'normal', hp: [56, 61], art: 'zombie_snail',
     onSpawn: (a, s) => a.apply(s.uid, S.shelled, 3),
     passiveText: 'Shelled 3. Rises again once, at half HP, when first killed.',
     hooks: {
@@ -64,25 +64,25 @@ export const ACT3_ENEMIES: EnemyDef[] = [
       },
     },
     moves: {
-      gnaw: atk('Gnaw', 12),
+      gnaw: atk('Gnaw', 10),
       hunker: blk('Hunker', 10),
       slime: atk('Rotten Slime', 7, 1, (a) => a.apply(PLAYER, S.soggy, 2)),
     },
     ai: (c) => cyc(c, ['gnaw', 'hunker', 'slime']),
   },
   {
-    id: 'cultist_cap', name: 'Death Cap Cultist', act: 3, tier: 'normal', hp: [62, 68], art: 'cultist_cap',
+    id: 'cultist_cap', name: 'Death Cap Cultist', act: 3, tier: 'normal', hp: [56, 61], art: 'cultist_cap',
     passiveText: 'Chants for +2 Might every third turn. The strikes get scarier.',
     moves: {
       chant: fx('Chant', ['buff'], (a, s) => a.apply(s.uid, S.might, 2)),
-      strike: atk('Heavy Strike', 13),
+      strike: atk('Heavy Strike', 11),
     },
     ai: (c) => cyc(c, ['chant', 'strike', 'strike']),
   },
 
   // ---- elites
   {
-    id: 'cordyceps_knight', name: 'Cordyceps Knight', act: 3, tier: 'elite', hp: [165, 174], art: 'cordyceps_knight', scale: 1.3,
+    id: 'cordyceps_knight', name: 'Cordyceps Knight', act: 3, tier: 'elite', hp: [155, 163], art: 'cordyceps_knight', scale: 1.3,
     onSpawn: (a, s) => a.apply(s.uid, S.prickly, 3),
     passiveText: 'Prickly 3: hitting it hurts. Spore casting spawns Sporelings and adds Prickly.',
     moves: {
@@ -107,7 +107,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['mimic_rot', 'mimic_block', 'chop', 'mimic_plant', 'chop']),
   },
   {
-    id: 'mold_hydra', name: 'Mold Hydra', act: 3, tier: 'elite', hp: [81, 88], art: 'mold_hydra', scale: 1.4,
+    id: 'mold_hydra', name: 'Mold Hydra', act: 3, tier: 'elite', hp: [66, 72], art: 'mold_hydra', scale: 1.4,
     passiveText: 'The middle head. Each fallen head makes it +2 Might. Roars give every head Regrow 5.',
     hooks: {
       onEnemyDeath: (api, _n, enemy) => {
@@ -150,7 +150,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => (c.self.mem.bloom ? cyc(c, ['crown', 'barrage', 'kiss', 'storm']) : cyc(c, ['decree', 'scepter', 'storm', 'scepter'])),
   },
   {
-    id: 'blight_heart', name: 'The Blight Heart', act: 3, tier: 'boss', hp: [375, 383], art: 'blight_heart', scale: 1.7,
+    id: 'blight_heart', name: 'The Blight Heart', act: 3, tier: 'boss', hp: [338, 345], art: 'blight_heart', scale: 1.7,
     onSpawn: (a, s) => a.apply(s.uid, S.shelled, 3),
     passiveText: 'Shelled 3. Every third turn: a Rot Wave (gathering shows as a buff). At half HP it spawns Mold Buds and its waves double down.',
     hooks: {
@@ -182,7 +182,7 @@ export const ACT3_ENEMIES: EnemyDef[] = [
     ai: (c) => cyc(c, ['puff', 'fume']),
   },
   {
-    id: 'hydra_head', name: 'Hydra Head', act: 3, tier: 'minion', hp: [44, 49], art: 'hydra_head',
+    id: 'hydra_head', name: 'Hydra Head', act: 3, tier: 'minion', hp: [36, 40], art: 'hydra_head',
     onSpawn: (a, s) => a.apply(s.uid, S.regrow, 2),
     passiveText: 'Regrows. Part of the Mold Hydra.',
     moves: {

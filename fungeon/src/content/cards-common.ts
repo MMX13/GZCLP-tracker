@@ -11,12 +11,12 @@ export const COMMON_CARDS: CardDef[] = [
   },
   {
     id: 'enoki_needles', name: 'Enoki Needles', type: 'attack', rarity: 'common', cost: 1, target: 'none',
-    vals: { dmg: 3, hits: 3 }, up: { dmg: 4 }, text: 'Deal {dmg} damage to a random enemy {hits} times.', art: 'thorn-jab',
+    vals: { dmg: 4, hits: 3 }, up: { dmg: 5 }, text: 'Deal {dmg} damage to a random enemy {hits} times.', art: 'thorn-jab',
     play: (api, v) => { hitRandom(api, v.dmg, v.hits); },
   },
   {
     id: 'spore_spray', name: 'Spore Spray', type: 'attack', rarity: 'common', cost: 1, target: 'none',
-    vals: { dmg: 4 }, up: { dmg: 6 }, text: 'Deal {dmg} damage to ALL enemies.', art: 'spore-cloud',
+    vals: { dmg: 5 }, up: { dmg: 7 }, text: 'Deal {dmg} damage to ALL enemies.', art: 'spore-cloud',
     play: (api, v) => { api.attackAll(v.dmg); },
   },
   {
@@ -26,7 +26,7 @@ export const COMMON_CARDS: CardDef[] = [
   },
   {
     id: 'puffball_pop', name: 'Puffball Pop', type: 'attack', rarity: 'common', cost: 1, target: 'enemy',
-    vals: { dmg: 3, spores: 1, sup: 0 }, up: { dmg: 4, sup: 1 },
+    vals: { dmg: 5, spores: 1, sup: 0 }, up: { dmg: 7, sup: 1 },
     text: 'Deal {dmg} damage. Add a Spore to your hand.', upText: 'Deal {dmg} damage. Add a Spore+ to your hand.', art: 'puffball-pop',
     play: (api, v, t) => { api.attack(t!, v.dmg); api.addCard('spore', 'hand', v.spores, v.sup === 1); },
   },
@@ -37,12 +37,12 @@ export const COMMON_CARDS: CardDef[] = [
   },
   {
     id: 'portobello_punch', name: 'Portobello Punch', type: 'attack', rarity: 'common', cost: 2, target: 'enemy',
-    vals: { dmg: 12 }, up: { dmg: 16 }, text: 'Deal {dmg} damage.', art: 'cap-slam',
+    vals: { dmg: 15 }, up: { dmg: 20 }, text: 'Deal {dmg} damage.', art: 'cap-slam',
     play: (api, v, t) => { api.attack(t!, v.dmg); },
   },
   {
     id: 'cap_slam', name: 'Cap Slam', type: 'attack', rarity: 'common', cost: 1, target: 'enemy',
-    vals: { dmg: 7 }, up: { dmg: 10 }, text: 'Deal {dmg} damage. Put a discarded card on top of your draw pile.', art: 'headbutt',
+    vals: { dmg: 8 }, up: { dmg: 11 }, text: 'Deal {dmg} damage. Put a discarded card on top of your draw pile.', art: 'headbutt',
     play: (api, v, t) => {
       api.attack(t!, v.dmg);
       api.choose({ prompt: 'Put a card on top of your draw pile', from: 'discard', min: 0, max: 1, action: 'topdeck' });
@@ -64,8 +64,8 @@ export const COMMON_CARDS: CardDef[] = [
     },
   },
   {
-    id: 'shiitake_shuffle', name: 'Shiitake Shuffle', type: 'skill', rarity: 'common', cost: 1, target: 'none',
-    vals: { draw: 2 }, up: { draw: 3 }, upCost: 0, text: 'Draw {draw} cards. Discard a card.', art: 'shake-off',
+    id: 'shiitake_shuffle', name: 'Shiitake Shuffle', type: 'skill', rarity: 'common', cost: 0, target: 'none',
+    vals: { draw: 2 }, up: { draw: 3 }, text: 'Draw {draw} cards. Discard a card.', art: 'shake-off',
     play: (api, v) => {
       api.draw(v.draw);
       api.choose({ prompt: 'Discard a card', from: 'hand', min: 1, max: 1, action: 'discard' });
@@ -103,8 +103,8 @@ export const COMMON_CARDS: CardDef[] = [
   },
   {
     id: 'sow_spores', name: 'Sow Spores', type: 'skill', rarity: 'common', cost: 1, target: 'none',
-    vals: { spores: 2 }, up: { spores: 3 }, text: 'Add {spores} Spores to your hand.', art: 'spore-burst',
-    play: (api, v) => { api.addCard('spore', 'hand', v.spores); },
+    vals: { spores: 2, draw: 1 }, up: { spores: 3 }, text: 'Add {spores} Spores to your hand. Draw {draw} card.', art: 'spore-burst',
+    play: (api, v) => { api.addCard('spore', 'hand', v.spores); api.draw(v.draw); },
   },
 
   // ---------------- plants (4)
@@ -119,8 +119,8 @@ export const COMMON_CARDS: CardDef[] = [
     },
   },
   {
-    id: 'fern_ando', name: 'Fern-ando', type: 'plant', rarity: 'common', cost: 2, upCost: 1, target: 'none',
-    vals: { blk: 3 }, up: { blk: 4 }, text: 'Each turn: gain {blk} Block.', art: 'fern',
+    id: 'fern_ando', name: 'Fern-ando', type: 'plant', rarity: 'common', cost: 1, target: 'none',
+    vals: { blk: 4 }, up: { blk: 5 }, text: 'Each turn: gain {blk} Block.', art: 'fern',
     flavor: 'Stays green. Stays cool.',
     plant: { grow: null, onGrow: (api, v) => { api.gainBlock(v.blk); } },
   },

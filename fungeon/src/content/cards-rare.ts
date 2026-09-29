@@ -69,7 +69,7 @@ export const RARE_CARDS: CardDef[] = [
     play: (api, v) => { api.attackAll(v.dmg); },
   },
   {
-    id: 'circle_of_life', name: 'Circle of Life', type: 'skill', rarity: 'rare', cost: 1, nutrients: 2, upNutrients: 1, target: 'none',
+    id: 'circle_of_life', name: 'Circle of Life', type: 'skill', rarity: 'rare', cost: 0, nutrients: 2, upNutrients: 1, target: 'none',
     vals: {}, text: 'Return a card from your Compost pile to your hand.', keywords: ['compost'], art: 'mirror',
     flavor: 'What rots, returns.',
     play: (api) => { api.choose({ prompt: 'Return a card to your hand', from: 'compost', min: 1, max: 1, action: 'toHand' }); },
@@ -89,7 +89,7 @@ export const RARE_CARDS: CardDef[] = [
   },
   {
     id: 'death_cap', name: 'Death Cap', type: 'attack', rarity: 'rare', cost: 2, target: 'enemy',
-    vals: { dmg: 10, rot: 8 }, up: { dmg: 13, rot: 11 }, text: 'Deal {dmg} damage. Apply {rot} Rot.', keywords: ['compost'], art: 'skull',
+    vals: { dmg: 10, rot: 7 }, up: { dmg: 13, rot: 9 }, text: 'Deal {dmg} damage. Apply {rot} Rot.', keywords: ['compost'], art: 'skull',
     flavor: 'Lovely with butter. (Not really.)',
     play: (api, v, t) => { api.attack(t!, v.dmg); api.apply(t!, 'rot', v.rot); },
   },

@@ -25,6 +25,15 @@ jobs:
       - run: npm install
       - run: npm test
       - run: npm run build
+      # Fungeon (mushroom deckbuilder) is published alongside the tracker at /fungeon/.
+      - name: Build Fungeon
+        working-directory: fungeon
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+          npm run build
+          cp -r dist ../dist/fungeon
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -33,7 +33,7 @@ export const ENCOUNTER_LIST: EncounterDef[] = [
   e('a2_mold_cricket', 2, 'hard', ['slime_mold', 'cave_cricket'], 0.5),
   e('a2_moth_cricket', 2, 'hard', ['moth', 'cave_cricket'], 1),
   e('a2_centi_glow', 2, 'hard', ['centipede', 'glow_worm'], 1),
-  e('a2_mold_pair', 2, 'hard', ['slime_mold', 'slime_mold'], 0.5),
+  e('a2_mold_pair', 2, 'hard', ['slime_mold', 'slime_mold'], 0.25),
   e('a2_spider', 2, 'elite', ['spider']),
   e('a2_crab', 2, 'elite', ['crystal_crab']),
   e('a2_echo', 2, 'elite', ['echo_bat']),
