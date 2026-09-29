@@ -5,16 +5,12 @@ import { randInt, stream } from './rng';
 import { passiveSum } from './combat';
 import { grantPotion, grantRelic, randomPotionId, relicRarityRoll } from './rewards';
 
-const REMOVAL_KEY = '#removals=';
-
-/** Number of card removals bought so far this run (stored in run.seenEvents as "#removals=N"; see notes/engine.md). */
+/** Number of card removals bought so far this run. */
 export function removalsUsed(run: RunState): number {
-  const e = run.seenEvents.find((s) => s.startsWith(REMOVAL_KEY));
-  return e ? Number(e.slice(REMOVAL_KEY.length)) || 0 : 0;
+  return run.removals ?? 0;
 }
 export function setRemovalsUsed(run: RunState, n: number): void {
-  run.seenEvents = run.seenEvents.filter((s) => !s.startsWith(REMOVAL_KEY));
-  run.seenEvents.push(REMOVAL_KEY + n);
+  run.removals = n;
 }
 
 function discounted(run: RunState, price: number): number {

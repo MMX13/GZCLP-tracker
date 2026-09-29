@@ -422,6 +422,8 @@ export interface RunState {
   bosses: [string, string, string];
   /** Number of normal fights done in current act (easy pool for first 3). */
   fightsThisAct: number;
+  /** Card removals bought in shops this run (raises the removal price). Optional so old saves stay valid. */
+  removals?: number;
 }
 
 // ---------------------------------------------------------------------------------------------------------------
