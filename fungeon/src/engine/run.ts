@@ -456,6 +456,15 @@ function proceed(run: RunState, ev: GameEvent[]): string | null {
       return leaveRewards(run, ev);
     case 'bossRelic':
       return pickBossRelic(run, null, ev);
+    case 'event': {
+      // softlock guard: an event page where no choice is available (all disabled / none) can always be left
+      const def = findEvent(s.event.id);
+      const page = def ? resolvePage(def, run, s.event) : undefined;
+      const anyOpen = !!page && page.choices.some((c) => !(c.disabled && c.disabled(run)));
+      if (anyOpen) return 'Pick one of the choices.';
+      run.screen = { kind: 'map' };
+      return null;
+    }
     default:
       return 'Nothing to proceed from.';
   }

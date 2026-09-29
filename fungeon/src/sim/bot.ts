@@ -254,11 +254,14 @@ export class Bot {
       p.from === 'options' ? p.options! : p.from === 'hand' ? c.hand : p.from === 'draw' ? c.draw : p.from === 'discard' ? c.discard : c.compost;
     const cands = p.candidates.map((u) => pool.find((x) => x.uid === u)!).filter(Boolean);
     const worstFirst = p.action === 'compost' || p.action === 'discard';
-    cands.sort((a, b) => (worstFirst ? this.keepValue(a) - this.keepValue(b) : this.keepValue(b) - this.keepValue(a)));
+    // never compost / discard the last few attack cards (otherwise the fight can never be won)
+    const attacks = [...c.hand, ...c.draw, ...c.discard].filter((x) => getCard(x.id).type === 'attack' && x.id !== 'spore').length;
+    const kv = (x: CardInstance) => this.keepValue(x) + (worstFirst && attacks <= 3 && getCard(x.id).type === 'attack' ? 6 : 0);
+    cands.sort((a, b) => (worstFirst ? kv(a) - kv(b) : kv(b) - kv(a)));
     let n = p.min;
     if (worstFirst) {
       // take optional extras only when they are junk
-      while (n < p.max && n < cands.length && this.keepValue(cands[n]) < 3.6) n++;
+      while (n < p.max && n < cands.length && kv(cands[n]) < 3.6) n++;
     } else {
       while (n < p.max && n < cands.length && this.keepValue(cands[n]) >= 4.5) n++;
     }

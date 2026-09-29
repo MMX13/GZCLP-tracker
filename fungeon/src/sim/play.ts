@@ -116,6 +116,7 @@ export function playRun(seed: string, o: PlayOpts): RunRec {
       log(`=== FIGHT ${fightStart.enc} (${fightStart.kind}) act ${run.act} floor ${run.floor}: ${describe(run)}`);
     }
     if (prev.screen.kind === 'combat') lastCombatTurn = prev.screen.combat.turn;
+    if (run.screen.kind === 'combat' && run.screen.combat.turn > 100) break; // stalled fight (counted as 'stuck')
     if (prev.screen.kind === 'combat' && run.screen.kind !== 'combat' && fightStart) {
       rec.fights.push({ enc: fightStart.enc, kind: fightStart.kind, act: fightStart.act, hpLost: run.stats.damageTaken - fightStart.dmg, turns: lastCombatTurn, won: run.screen.kind !== 'defeat' });
       log(`=== END ${fightStart.enc}: ${run.screen.kind}, hp ${run.hp}/${run.maxHp}, lost ${run.stats.damageTaken - fightStart.dmg} in ${lastCombatTurn} turns`);

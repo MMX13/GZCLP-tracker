@@ -553,6 +553,15 @@ describe('events', () => {
     r = step(r, { type: 'leaveRewards' });
     assert.equal(r.run.screen.kind, 'map');
   });
+  test('softlock guard: an event with every choice disabled can be left with proceed', () => {
+    const r = fresh({ seed: 'LOCK' });
+    r.screen = { kind: 'event', event: { id: 't_locked', page: 'start', mem: {} } };
+    assert.ok(act(r, { type: 'eventChoice', index: 0 }).error);
+    const res = step({ run: r, events: [] }, { type: 'proceed' });
+    assert.equal(res.run.screen.kind, 'map');
+    // but a normal event cannot be skipped
+    assert.ok(act(inEvent().run, { type: 'proceed' }).error);
+  });
   test('node type event picks unseen events for the act and records them', () => {
     const sc = goto(fresh({ seed: 'EVN' }), 'event');
     assert.equal(sc.run.screen.kind, 'event');

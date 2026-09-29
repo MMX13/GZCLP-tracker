@@ -174,6 +174,10 @@ export const FIXTURE_RELICS: RelicDef[] = [
 
 export const FIXTURE_EVENTS: EventDef[] = [
   {
+    id: 't_locked', name: 'Locked', acts: [], art: 'well',
+    pages: { start: { text: 'nothing works', choices: [{ label: 'No', disabled: () => 'nope', pick: () => null }] } },
+  },
+  {
     id: 't_event', name: 'Test Event', acts: [1, 2, 3], art: 'well',
     pages: {
       start: {
