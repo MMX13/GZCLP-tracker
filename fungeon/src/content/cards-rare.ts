@@ -11,8 +11,8 @@ export const RARE_CARDS: CardDef[] = [
     play: (api, v) => { api.apply(PLAYER, 'pw_spore_heart', v.n); },
   },
   {
-    id: 'growth_spurt', name: 'Growth Spurt', type: 'power', rarity: 'rare', cost: 3, upCost: 2, target: 'none',
-    vals: { n: 2 }, text: 'At the start of your turn, gain {n} Might.', art: 'crown',
+    id: 'growth_spurt', name: 'Growth Spurt', type: 'power', rarity: 'rare', cost: 3, target: 'none',
+    vals: { n: 2 }, up: { n: 3 }, text: 'At the start of your turn, gain {n} Might.', art: 'crown',
     flavor: 'Nobody told the cap to stop.',
     play: (api, v) => { api.apply(PLAYER, 'pw_growth_spurt', v.n); },
   },
@@ -46,16 +46,16 @@ export const RARE_CARDS: CardDef[] = [
   // ---------------- Garden glue
   {
     id: 'bumper_crop', name: 'Bumper Crop', type: 'skill', rarity: 'rare', cost: 1, target: 'none',
-    vals: { n: 2 }, up: { n: 3 }, text: 'Grow all Plants by {n}. Draw a card for each Bloom.', art: 'flower',
+    vals: { n: 2 }, up: { n: 3 }, text: 'Grow all Plants by {n}. For each Bloom, draw a card and gain 1 Spore.', art: 'flower',
     play: (api, v) => {
       const before = api.combat.counters.bloomsCombat;
       api.growPlants(v.n);
       const d = api.combat.counters.bloomsCombat - before;
-      if (d > 0) api.draw(d);
+      if (d > 0) { api.draw(d); api.gainEnergy(d); }
     },
   },
   {
-    id: 'harvest_time', name: 'Harvest Time', type: 'skill', rarity: 'rare', cost: 2, upCost: 1, target: 'none',
+    id: 'harvest_time', name: 'Harvest Time', type: 'skill', rarity: 'rare', cost: 1, upCost: 0, target: 'none',
     vals: {}, text: 'Grow all Plants until they Bloom.', art: 'root-network',
     flavor: 'Ready or not.',
     play: (api) => { api.growPlants(99); },
@@ -69,8 +69,8 @@ export const RARE_CARDS: CardDef[] = [
     play: (api, v) => { api.attackAll(v.dmg); },
   },
   {
-    id: 'circle_of_life', name: 'Circle of Life', type: 'skill', rarity: 'rare', cost: 1, nutrients: 3, upNutrients: 2, target: 'none',
-    vals: {}, text: 'Return a card from your Compost pile to your hand.', art: 'mirror',
+    id: 'circle_of_life', name: 'Circle of Life', type: 'skill', rarity: 'rare', cost: 1, nutrients: 2, upNutrients: 1, target: 'none',
+    vals: {}, text: 'Return a card from your Compost pile to your hand.', keywords: ['compost'], art: 'mirror',
     flavor: 'What rots, returns.',
     play: (api) => { api.choose({ prompt: 'Return a card to your hand', from: 'compost', min: 1, max: 1, action: 'toHand' }); },
   },

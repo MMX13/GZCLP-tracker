@@ -127,7 +127,9 @@ export function TopBar() {
                 onClick={() => {
                   const slot = potion;
                   setPotion(null);
-                  if (pdef.target === 'enemy') setTargeting({ kind: 'potion', slot, name: pdef.name });
+                  const alive = combat ? combat.enemies.filter((e) => e.alive) : [];
+                  if (pdef.target === 'enemy' && alive.length === 1) dispatch({ type: 'usePotion', slot, target: alive[0].uid });
+                  else if (pdef.target === 'enemy') setTargeting({ kind: 'potion', slot, name: pdef.name });
                   else dispatch({ type: 'usePotion', slot });
                 }}
               >

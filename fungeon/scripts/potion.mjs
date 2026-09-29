@@ -1,0 +1,18 @@
+import { chromium } from 'playwright-core';
+import { readFileSync } from 'node:fs';
+const save = JSON.parse(readFileSync('/tmp/claude-0/scene-potion.json', 'utf8')).potion;
+const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
+await ctx.addInitScript((s) => { localStorage.setItem('fungeon.run.v1', s); }, save);
+const page = await ctx.newPage();
+page.on('pageerror', (e) => console.log('PAGE ERROR', e.message));
+await page.goto('http://localhost:4173/'); await page.waitForTimeout(400);
+const t = (id) => page.locator(`[data-testid="${id}"]`);
+await t('continue').tap({ force: true }); await page.waitForTimeout(800);
+await t('potion-0').tap({ force: true }); await page.waitForTimeout(300);
+await page.screenshot({ path: '/tmp/claude-0/p-sheet.png' });
+await t('potion-use').tap({ force: true }); await page.waitForTimeout(300);
+await page.screenshot({ path: '/tmp/claude-0/p-target.png' });
+await page.locator('[data-enemy-uid]').first().tap({ force: true }); await page.waitForTimeout(1200);
+await page.screenshot({ path: '/tmp/claude-0/p-after.png' });
+await browser.close();

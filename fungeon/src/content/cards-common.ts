@@ -42,7 +42,7 @@ export const COMMON_CARDS: CardDef[] = [
   },
   {
     id: 'cap_slam', name: 'Cap Slam', type: 'attack', rarity: 'common', cost: 1, target: 'enemy',
-    vals: { dmg: 6 }, up: { dmg: 9 }, text: 'Deal {dmg} damage. Put a discarded card on top of your draw pile.', art: 'headbutt',
+    vals: { dmg: 7 }, up: { dmg: 10 }, text: 'Deal {dmg} damage. Put a discarded card on top of your draw pile.', art: 'headbutt',
     play: (api, v, t) => {
       api.attack(t!, v.dmg);
       api.choose({ prompt: 'Put a card on top of your draw pile', from: 'discard', min: 0, max: 1, action: 'topdeck' });
@@ -52,7 +52,7 @@ export const COMMON_CARDS: CardDef[] = [
   // ---------------- skills (10)
   {
     id: 'bark_armor', name: 'Bark Armor', type: 'skill', rarity: 'common', cost: 1, target: 'none',
-    vals: { blk: 5 }, up: { blk: 7 }, text: 'Gain {blk} Block.', keywords: ['keep'], art: 'bark-armor',
+    vals: { blk: 6 }, up: { blk: 9 }, text: 'Gain {blk} Block.', keywords: ['keep'], art: 'bark-armor',
     play: (api, v) => { api.gainBlock(v.blk); },
   },
   {
@@ -65,7 +65,7 @@ export const COMMON_CARDS: CardDef[] = [
   },
   {
     id: 'shiitake_shuffle', name: 'Shiitake Shuffle', type: 'skill', rarity: 'common', cost: 1, target: 'none',
-    vals: { draw: 2 }, up: { draw: 3 }, text: 'Draw {draw} cards. Discard a card.', art: 'shake-off',
+    vals: { draw: 2 }, up: { draw: 3 }, upCost: 0, text: 'Draw {draw} cards. Discard a card.', art: 'shake-off',
     play: (api, v) => {
       api.draw(v.draw);
       api.choose({ prompt: 'Discard a card', from: 'hand', min: 1, max: 1, action: 'discard' });
@@ -88,17 +88,17 @@ export const COMMON_CARDS: CardDef[] = [
   },
   {
     id: 'drizzle', name: 'Drizzle', type: 'skill', rarity: 'common', cost: 1, target: 'enemy',
-    vals: { soggy: 2, draw: 1 }, up: { soggy: 3 }, text: 'Apply {soggy} Soggy. Draw {draw} card.', art: 'rain',
-    play: (api, v, t) => { api.apply(t!, 'soggy', v.soggy); api.draw(v.draw); },
+    vals: { soggy: 2, draw: 1, blk: 3 }, up: { soggy: 3, blk: 4 }, text: 'Apply {soggy} Soggy. Gain {blk} Block. Draw {draw} card.', art: 'rain',
+    play: (api, v, t) => { api.apply(t!, 'soggy', v.soggy); api.gainBlock(v.blk); api.draw(v.draw); },
   },
   {
     id: 'bramble_coat', name: 'Bramble Coat', type: 'skill', rarity: 'common', cost: 1, target: 'none',
-    vals: { blk: 5, prickly: 2 }, up: { blk: 6, prickly: 3 }, text: 'Gain {blk} Block. Gain {prickly} Prickly.', art: 'hide-leaf',
+    vals: { blk: 6, prickly: 1 }, up: { blk: 7, prickly: 2 }, text: 'Gain {blk} Block. Gain {prickly} Prickly.', art: 'hide-leaf',
     play: (api, v) => { api.gainBlock(v.blk); api.apply(PLAYER, 'prickly', v.prickly); },
   },
   {
     id: 'dewdrop_sip', name: 'Dewdrop Sip', type: 'skill', rarity: 'common', cost: 1, target: 'none',
-    vals: { blk: 4, regrow: 3 }, up: { blk: 5, regrow: 4 }, text: 'Gain {blk} Block. Gain {regrow} Regrow.', art: 'dew-drop',
+    vals: { blk: 3, regrow: 2 }, up: { blk: 5, regrow: 3 }, text: 'Gain {blk} Block. Gain {regrow} Regrow.', art: 'dew-drop',
     play: (api, v) => { api.gainBlock(v.blk); api.apply(PLAYER, 'regrow', v.regrow); },
   },
   {
@@ -131,11 +131,11 @@ export const COMMON_CARDS: CardDef[] = [
   },
   {
     id: 'bramble_patch', name: 'Bramble Patch', type: 'plant', rarity: 'common', cost: 1, target: 'none',
-    vals: { prickly: 1, blk: 8 }, up: { prickly: 2 }, text: 'Each turn: gain {prickly} Prickly. Bloom: gain {blk} Block.', art: 'bramble',
+    vals: { blk: 2, prickly: 3 }, up: { blk: 3, prickly: 4 }, text: 'Each turn: gain {blk} Block. Bloom: gain {prickly} Prickly.', art: 'bramble',
     plant: {
       grow: 3,
-      onGrow: (api, v) => { api.apply(PLAYER, 'prickly', v.prickly); },
-      onBloom: (api, v) => { api.gainBlock(v.blk); },
+      onGrow: (api, v) => { api.gainBlock(v.blk); },
+      onBloom: (api, v) => { api.apply(PLAYER, 'prickly', v.prickly); },
     },
   },
 ];

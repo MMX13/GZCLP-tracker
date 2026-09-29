@@ -1,7 +1,7 @@
 // Builds saved runs for specific screens (run with: npx tsx scripts/mkscenes.ts > /tmp/claude-0/scenes.json)
-import { newRun, serialize } from '../src/engine';
+import { act, newRun, selectableNodes, serialize } from '../src/engine';
 import { generateShop } from '../src/engine/shop';
-import { EVENTS } from '../src/content';
+import { EVENTS, POTIONS } from '../src/content';
 
 const out: Record<string, string> = {};
 function base() { const r = newRun({ seed: 'scene', ascension: 0 }); r.gold = 260; return r; }
@@ -20,5 +20,13 @@ function base() { const r = newRun({ seed: 'scene', ascension: 0 }); r.gold = 26
   const r = base();
   r.screen = { kind: 'cardSelect', purpose: 'upgrade', prompt: 'Nurture a card', count: 1, candidates: r.deck.map((c) => c.uid), canSkip: true, returnTo: { kind: 'map' } };
   out.upgrade = serialize(r);
+}
+{
+  let r = base();
+  const targeted = Object.values(POTIONS).find((p) => p.target === 'enemy');
+  const plain = Object.values(POTIONS).find((p) => p.target !== 'enemy');
+  r.potions = [targeted?.id ?? null, plain?.id ?? null, null];
+  r = act(r, { type: 'selectNode', nodeId: selectableNodes(r)[0] }).run;
+  out.potion = serialize(r);
 }
 console.log(JSON.stringify(out));

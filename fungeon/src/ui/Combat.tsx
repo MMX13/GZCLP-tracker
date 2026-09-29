@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Art, EnemyArt, Icon, IntentIcon, PlayerArt, audio } from '../art';
 import { cardView, intentView, statusViews } from '../engine';
 import type { CardInstance, CardView, CombatState, EnemyState, IntentView, RunState, StatusView } from '../engine';
 import { ENEMIES } from '../content';
 import { useGame } from './game';
 import type { Fx } from './game';
-import { Btn, HpBar, StatusRow, useTip } from './kit';
+import { Btn, HpBar, StatusRow, useHeight, useTip } from './kit';
 import { CardFace, CardZoom } from './Card';
 import { CardGrid, PileSheet } from './TopBar';
 import { Hand } from './Hand';
@@ -167,6 +167,8 @@ export function Combat() {
   const [zoom, setZoom] = useState<CardView | null>(null);
   const [hover, setHover] = useState<string | null>(null);
   const [dragging, setDragging] = useState<number | null>(null);
+  const enemiesRef = useRef<HTMLDivElement>(null);
+  const areaH = useHeight(enemiesRef);
 
   const views = useMemo(() => combat.hand.map((c) => {
     try { return cardView(c, run!); } catch { return null; }
@@ -227,7 +229,11 @@ export function Combat() {
   };
 
   const n = living.length;
-  const size = n <= 2 ? 112 : n === 3 ? 92 : n === 4 ? 74 : 62;
+  const byCount = n <= 2 ? 118 : n === 3 ? 96 : n === 4 ? 76 : 64;
+  const maxScale = Math.max(1, ...living.map((e) => ENEMIES[e.id]?.scale ?? 1));
+  // leave room for intent (38), hp bar (17), statuses (28), name (16) and gaps
+  const size = Math.max(44, Math.min(byCount, Math.floor((areaH - 112) / maxScale)));
+  const small = areaH < 250;
   const p = combat.player;
   const energy = fx.ov?.energy ?? p.energy;
   const nut = fx.ov?.nut ?? p.nutrients;
@@ -237,9 +243,9 @@ export function Combat() {
   const pips = viewsFor(run!, 'player', fx);
 
   return (
-    <div className={`combat ${fx.shake ? 'shake' : ''} ${combat.phase !== 'player' ? 'ended' : ''}`} data-testid="combat" data-phase={combat.phase} onPointerDown={(e) => { if ((e.target as HTMLElement).closest('.enemy,.hand,.btn,button,.sel-info')) return; setSel(null); }}>
+    <div className={`combat ${small ? 'compact' : ''} ${fx.shake ? 'shake' : ''} ${combat.phase !== 'player' ? 'ended' : ''}`} data-testid="combat" data-phase={combat.phase} onPointerDown={(e) => { if ((e.target as HTMLElement).closest('.enemy,.hand,.btn,button,.sel-info')) return; setSel(null); }}>
       <div className="field">
-        <div className="enemies" data-count={n}>
+        <div className="enemies" data-count={n} ref={enemiesRef}>
           {living.map((e) => (
             <EnemyView key={e.uid} e={e} run={run!} fx={fx} size={size} targetable={(cardTargeting || potionTargeting) && e.alive} hover={hover === e.uid} onTap={onEnemyTap} />
           ))}
@@ -253,7 +259,7 @@ export function Combat() {
         <div className="mid">
           <div className={`pip ${fx.anim.player ?? ''}`} data-testid="pip">
             <div className="pip-art">
-              <PlayerArt size={92} state={fx.anim.player === 'dead' ? 'dead' : fx.anim.player ?? 'idle'} />
+              <PlayerArt size={small ? 70 : 92} state={fx.anim.player === 'dead' ? 'dead' : fx.anim.player ?? 'idle'} />
               <Floaters id="player" fx={fx} />
             </div>
             <HpBar hp={php} max={p.maxHp} block={pblock} />

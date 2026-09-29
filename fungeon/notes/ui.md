@@ -17,3 +17,9 @@
 
 ## Audio
 SfxName is the full union in the original contract (click, card, draw, ...). art/audio.ts currently only exports 'click'; the UI calls all names.
+
+## Status (UI agent)
+- All screens implemented and driven end to end with scripts/play.mjs (bot reaches the act-1 boss and a defeat screen without page errors).
+- Engine: `restInfo` is used by the Rest screen. Everything else goes through the documented facade.
+- Testing helpers: scripts/serve.mjs (static server for dist/), scripts/play.mjs (bot), scripts/scenes.mjs + scripts/mkscenes.ts
+  (saved-run scenes for shop/rest/event/etc), scripts/anim.mjs, scripts/drag.mjs (pointer drag/long-press/tooltips), scripts/potion.mjs.

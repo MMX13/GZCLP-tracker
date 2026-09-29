@@ -39,13 +39,26 @@ for (const f of readdirSync(join(root, 'static'))) {
   cpSync(join(root, 'static', f), join(out, f), { recursive: true });
 }
 
-const fontTags = [
-  '<link rel="preconnect" href="https://fonts.googleapis.com" />',
-  '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
-  '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" />',
-].join('\n    ');
+// Fonts are bundled from @fontsource (latin subset) so the game renders identically offline.
+const FONTS = [
+  ['Fredoka', 'fredoka', [500, 600, 700]],
+  ['Nunito', 'nunito', [500, 700, 800]],
+];
+mkdirSync(join(out, 'fonts'), { recursive: true });
+const fontFace = (inline) =>
+  FONTS.flatMap(([family, pkg, weights]) =>
+    weights.map((w) => {
+      const file = `${pkg}-latin-${w}-normal.woff2`;
+      const src = join(root, 'node_modules/@fontsource', pkg, 'files', file);
+      if (!inline) cpSync(src, join(out, 'fonts', file));
+      const url = inline ? `data:font/woff2;base64,${readFileSync(src).toString('base64')}` : file; // relative to fonts/fonts.css
+      return `@font-face{font-family:'${family}';font-style:normal;font-display:swap;font-weight:${w};src:url(${url}) format('woff2')}`;
+    }),
+  ).join('\n');
+writeFileSync(join(out, 'fonts/fonts.css'), fontFace(false));
+const fontTags = '<link rel="stylesheet" href="fonts/fonts.css" />';
 
-const head = (extra) => `<!doctype html>
+const head = (extra, fonts = fontTags) => `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -56,7 +69,7 @@ const head = (extra) => `<!doctype html>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="description" content="Fungeon - a cozy, crunchy mushroom roguelike deckbuilder." />
     <title>Fungeon</title>
-    ${fontTags}
+    ${fonts}
     ${extra}
   </head>`;
 
@@ -97,7 +110,7 @@ if (single) {
   writeFileSync(
     join(out, 'fungeon.html'),
     `${head(`<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(icon)}" />
-    <style>${cssText}</style>`)}
+    <style>${cssText}</style>`, `<style>${fontFace(true)}</style>`)}
   <body>
     <div id="root"></div>
     <script type="module">${jsText}</script>

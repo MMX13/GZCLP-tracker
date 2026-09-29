@@ -39,7 +39,7 @@ export const UNCOMMON_CARDS: CardDef[] = [
   },
   {
     id: 'decomposer', name: 'Decomposer', type: 'power', rarity: 'uncommon', cost: 1, target: 'none',
-    vals: { n: 2 }, up: { n: 3 }, text: 'Whenever you Compost a card, hit a random enemy for {n}.', art: 'mycelium-web',
+    vals: { n: 3 }, up: { n: 4 }, text: 'Whenever you Compost a card, hit a random enemy for {n}.', art: 'mycelium-web',
     play: (api, v) => { api.apply(PLAYER, 'pw_decomposer', v.n); },
   },
   {

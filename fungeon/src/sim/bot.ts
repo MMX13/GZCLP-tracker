@@ -76,25 +76,25 @@ export function evalState(run: RunState, meta: Meta): number {
   const rf = Math.min(1.3, E / 3.5);
   let v = 0;
   for (const [id, n] of Object.entries(p.statuses)) {
-    if (id === 'might') v += 6 * n * rf;
-    else if (id === 'sturdy') v += 4 * n * rf;
+    if (id === 'might') v += 6 * Math.min(n, 8) * rf;
+    else if (id === 'sturdy') v += 4 * Math.min(n, 5) * rf;
     else if (id === 'prickly') v += Math.min(1.5 * n, 8) * rf * Math.min(3, hits);
-    else if (id === 'regrow') v += 0.6 * ((n * (n + 1)) / 2);
+    else if (id === 'regrow') v += 0.6 * ((Math.min(n, 6) * (Math.min(n, 6) + 1)) / 2);
     else if (id === 'armored' || id === 'shelled' || id === 'growing') v += 2 * rf;
     else if (NEG_STATUS.has(id)) v -= id === 'rot' ? 0 : 3.5 * Math.min(n, 3);
-    else v += ((POWER_VALUE[id] ?? 9) + 0.5 * (n - 1)) * rf;
+    else v += ((POWER_VALUE[id] ?? 9) + 0.5 * (Math.min(n, 6) - 1)) * rf;
   }
   for (const pl of c.garden) {
     if (!pl) continue;
     const def = getCard(pl.card.id);
     v += (6 + (def.plant?.grow ? 1.5 * pl.growth : 0)) * rf;
   }
-  v += p.nutrients * 1.2;
+  v += Math.min(p.nutrients, 5) * 1.2 + Math.max(0, p.nutrients - 5) * 0.1;
   v += meta.drawn * (p.energy > 0 ? 1.2 : 0.4);
-  v += 0.1 * Math.max(0, p.block - incoming);
+  v += ((p.statuses.armored ?? 0) > 0 ? 0.35 : 0.12) * Math.max(0, p.block - incoming);
   for (const h of c.hand) {
     const d = getCard(h.id);
-    if (d.cost === 0 && d.cost !== -1 && !cardKeywords(h, d).includes('unplayable')) v += 2;
+    if (d.cost === 0 && !cardKeywords(h, d).includes('unplayable')) v += 2;
   }
   return v - threat - hpW * hpLoss - meta.potions * meta.potionCost;
 }
@@ -167,7 +167,7 @@ export class Bot {
     const c = run.screen.kind === 'combat' ? run.screen.combat : null;
     if (!c) return [];
     const frac = c.player.hp / c.player.maxHp;
-    const potionCost = (c.kind === 'boss' ? 4 : c.kind === 'elite' ? 8 : 18) * (frac < 0.4 ? 0.3 : 1);
+    const potionCost = (c.kind === 'boss' ? 1.5 : c.kind === 'elite' ? 4 : 18) * (frac < 0.4 ? 0.3 : 1);
     const allowPotions = run.potions.some(Boolean);
     type Node = { run: RunState; actions: Action[]; score: number; drawn: number; potions: number };
     const meta0 = { drawn: 0, potions: 0, potionCost };
@@ -208,11 +208,15 @@ export class Bot {
   private combatAction(run: RunState, events: GameEvent[]): Action {
     const c = run.screen.kind === 'combat' ? run.screen.combat : null;
     if (!c) return { type: 'endTurn' };
-    if (c.pending) return this.chooseAction(run);
+    if (c.pending) {
+      this.plan = [];
+      return this.chooseAction(run);
+    }
     if (events.some((e) => e.t === 'draw' || e.t === 'newCard' || e.t === 'shuffle' || e.t === 'spawn')) this.plan = [];
     // validate the next planned action
     while (this.plan.length) {
       const a = this.plan[0];
+      if (a.type === 'choose') { this.plan = []; break; }
       if (this.isValid(run, a)) return this.plan.shift()!;
       this.plan = [];
     }
@@ -354,17 +358,18 @@ export class Bot {
     if (s.done) return { type: 'proceed' };
     const f = run.hp / run.maxHp;
     const beforeBoss = run.floor >= 10;
+    const nextElite = (run.map.nodes[run.map.current ?? '']?.next ?? []).some((id) => run.map.nodes[id]?.type === 'elite');
     const canUp = run.deck.some((c) => canUpgradeCard(c));
     const noHeal = run.relics.some((r) => findRelic(r.id)?.passive?.noHealAtRest);
     if (noHeal) return canUp ? { type: 'rest', option: 'upgrade' } : { type: 'proceed' };
-    if (f < (beforeBoss ? 0.8 : 0.55) || !canUp) return { type: 'rest', option: 'heal' };
+    if (f < (beforeBoss ? 0.75 : nextElite ? 0.6 : 0.45) || !canUp) return { type: 'rest', option: 'heal' };
     return { type: 'rest', option: 'upgrade' };
   }
 
   private removalValue(card: CardInstance): number {
     const d = getCard(card.id);
     if (d.type === 'curse' || d.type === 'status') return 9;
-    if (card.id === 'bonk' || card.id === 'cap_up') return 7 - (card.upgraded ? 2 : 0);
+    if (card.id === 'bonk' || card.id === 'cap_up') return 8 - (card.upgraded ? 2 : 0);
     return 0;
   }
 
@@ -415,7 +420,7 @@ export class Bot {
   }
 
   /** Crude reading of an event choice label. */
-  labelValue(label: string, run: RunState, f: number): number {
+  labelValue(label: string, _run: RunState, f: number): number {
     const t = label.toLowerCase();
     let v = 0;
     const num = (re: RegExp) => {
@@ -455,7 +460,6 @@ export class Bot {
         break;
       default:
         // remove / transform / custom trade: worst card first
-        sorted = cards.sort((a, b) => -this.removalValue(a) - -this.removalValue(b) || baseRating(a.id) - baseRating(b.id));
         sorted = cards.sort((a, b) => this.removalValue(b) - this.removalValue(a) || baseRating(a.id) - baseRating(b.id));
     }
     if (s.purpose === 'remove' && this.opts.picks === 'none') return { type: 'choose', uids: [] };
@@ -468,7 +472,8 @@ export class Bot {
     if (d.cost === 2 && d.upCost === 1) v += 2;
     if (d.up) v += 0.5;
     if (!d.up && !d.upCost && !d.upKeywords) v -= 4;
-    if (c.id === 'bonk' || c.id === 'cap_up') v += 0.5;
+    if (d.type === 'power' || d.type === 'plant') v += 1;
+    if (c.id === 'bonk' || c.id === 'cap_up') v -= 0.5;
     return v;
   }
 }

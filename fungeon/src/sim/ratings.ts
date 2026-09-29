@@ -7,17 +7,17 @@ export const CARD_RATING: Record<string, number> = {
   bonk: 3, cap_up: 3, spore_puff: 4.5, seedling: 4, spore: 3,
   // commons
   fungi_fisticuffs: 5.5, enoki_needles: 4.5, spore_spray: 5.5, root_whip: 5, puffball_pop: 5, gill_slice: 6,
-  portobello_punch: 4.5, cap_slam: 4.5, bark_armor: 4.5, mulch: 5.5, shiitake_shuffle: 4, forage: 5.5,
-  toxic_drip: 6, fester_cloud: 5.5, drizzle: 5.5, bramble_coat: 4.5, dewdrop_sip: 4, sow_spores: 4.5,
-  snappy_sprout: 6, fern_ando: 5, puffball: 6, bramble_patch: 4.5,
+  portobello_punch: 4.5, cap_slam: 4.5, bark_armor: 5.5, mulch: 5.5, shiitake_shuffle: 4, forage: 5.5,
+  toxic_drip: 6, fester_cloud: 5.5, drizzle: 5.5, bramble_coat: 7, dewdrop_sip: 7, sow_spores: 4.5,
+  snappy_sprout: 6, fern_ando: 5, puffball: 6, bramble_patch: 6,
   // uncommons
   touch_of_rot: 6, stinkhorn: 6.5, putrefy: 6.5, contagion: 5, fairy_ring: 5.5, decomposer: 5, slow_simmer: 8,
-  root_network: 5, green_thumb: 6, glowcap: 6.5, thorny_vine: 7, sunflower: 7, fertilize: 5, mycelium_lash: 6.5,
-  rootbound: 5, harvest_moon: 6, spore_surge: 5.5, grave_soil: 5.5, prune: 6, hibernate: 5, puff_up: 7,
+  root_network: 5.5, green_thumb: 6, glowcap: 6.5, thorny_vine: 7, sunflower: 7, fertilize: 5, mycelium_lash: 6.5,
+  rootbound: 5, harvest_moon: 6, spore_surge: 5.5, grave_soil: 5.5, prune: 6, hibernate: 5.5, puff_up: 7,
   toughen_up: 6, spore_whirl: 7, foragers_pick: 5, spore_sack: 5.5, sporadic_fire: 5.5,
   // rares
   spore_heart: 8, growth_spurt: 8, rot_wave: 6, venom_cap: 6, doomcap: 7, ancient_oak: 8, bumper_crop: 5,
-  harvest_time: 5.5, mushroom_cloud: 7, circle_of_life: 5, second_spring: 5, truffle_shuffle: 7, death_cap: 8,
+  harvest_time: 5.5, mushroom_cloud: 7, circle_of_life: 5, second_spring: 6, truffle_shuffle: 7, death_cap: 8,
   mother_of_spores: 6.5, downpour: 6.5, sporefall: 6,
 };
 
@@ -60,6 +60,10 @@ export function pickRating(id: string, deck: CardInstance[], upgraded = false): 
   // too many plants clog the garden
   const plants = deck.filter((c) => getCard(c.id).plant).length;
   if (getCard(id).plant && plants >= 5) r -= 1.5 * (plants - 4);
+  // defence: the starter deck has 4 Cap Ups; a competent player adds more block / mitigation
+  const def0 = getCard(id);
+  const blockCards = deck.filter((c) => /Block/.test(getCard(c.id).text) && c.id !== 'cap_up').length;
+  if (/Block/.test(def0.text) && def0.type !== 'plant') r += Number(process.env.BOT_BLK ?? 1.5) * Math.max(0, 1 - blockCards / 5);
   // 3+ copies of the same card are worth less
   const copies = deck.filter((c) => c.id === id).length;
   if (copies >= 2 && getCard(id).type !== 'attack') r -= 1.2 * (copies - 1);
@@ -68,7 +72,7 @@ export function pickRating(id: string, deck: CardInstance[], upgraded = false): 
 
 /** Minimum adjusted rating to take a card (deck dilution). */
 export function pickThreshold(deck: CardInstance[]): number {
-  return 4.6 + 0.16 * Math.max(0, deck.length - 12);
+  return Number(process.env.BOT_THR ?? 4.6) + 0.16 * Math.max(0, deck.length - 12);
 }
 
 export const RELIC_RATING: Record<string, number> = {

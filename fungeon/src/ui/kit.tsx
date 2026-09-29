@@ -1,6 +1,9 @@
 // Small shared UI pieces: tooltips, sheets, buttons, bars, status chips.
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
+import { createPortal } from 'react-dom';
+
+const appRoot = (): Element => document.querySelector('.app') ?? document.body;
 import { Art, Icon } from '../art';
 import type { IconName } from '../art';
 import type { StatusView } from '../engine';
@@ -52,7 +55,7 @@ export function TipProvider({ children }: { children: ReactNode }) {
   return (
     <TipCtx.Provider value={show}>
       {children}
-      {tip && (
+      {tip && createPortal(
         <div className="tip" ref={ref} style={pos ? { left: pos.left, top: pos.top } : { visibility: 'hidden', left: 0, top: 0 }} role="tooltip" data-testid="tooltip">
           <div className="tip-head">
             {tip.content.art}
@@ -62,7 +65,8 @@ export function TipProvider({ children }: { children: ReactNode }) {
           {tip.content.extra?.map((e) => (
             <p key={e.name} className="tip-extra"><b>{e.name}</b> {e.text}</p>
           ))}
-        </div>
+        </div>,
+        appRoot(),
       )}
     </TipCtx.Provider>
   );
@@ -70,7 +74,7 @@ export function TipProvider({ children }: { children: ReactNode }) {
 
 // ------------------------------------------------------------------ sheet
 export function Sheet({ title, onClose, children, tall, testid }: { title?: string; onClose?: () => void; children: ReactNode; tall?: boolean; testid?: string }) {
-  return (
+  return createPortal(
     <div className="sheet-wrap" onPointerDown={(e) => { if (e.target === e.currentTarget) onClose?.(); }} data-testid={testid}>
       <div className={`sheet ${tall ? 'tall' : ''}`} role="dialog" aria-label={title}>
         <div className="sheet-head">
@@ -83,7 +87,8 @@ export function Sheet({ title, onClose, children, tall, testid }: { title?: stri
         </div>
         <div className="sheet-body">{children}</div>
       </div>
-    </div>
+    </div>,
+    appRoot(),
   );
 }
 
@@ -168,4 +173,18 @@ export function Loot({ art, title, sub, price, sold, disabled, onClick, testid, 
       {sold && <span className="sold-tag">SOLD</span>}
     </button>
   );
+}
+
+export function useHeight(ref: RefObject<HTMLElement | null>): number {
+  const [h, setH] = useState(300);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const upd = () => setH(el.clientHeight);
+    upd();
+    const ro = new ResizeObserver(upd);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref]);
+  return h;
 }

@@ -56,11 +56,14 @@ Same seed + same actions => identical run and identical events (`stats.startedAt
 * Unknown card ids never crash (inert unplayable placeholder), so old saves survive content renames.
 
 ## Requests / workarounds for types.ts (not edited)
-* RunState has no counter for shop card removals (price +25 per use). Workaround: stored as the string `#removals=N` inside `run.seenEvents`
-  (never a real event id). If you want it clean, add `removals: number` to RunState.
+* (Resolved) `RunState.removals?: number` now counts shop removals (the old `#removals=N` seenEvents hack is gone).
 * GameEvent has no event for enemy block reset or for "power card vanished"; the UI infers both from state/`turn` events.
 
 ## Known gaps
 * `Reward` items are marked `taken` when skipped as well; UI should treat `taken` cards as gone.
 * No undo / no mid-turn save of `PendingChoice` for potions (potions can't open choices - `sourceCardId` is unset, so no afterChoice).
 * Boss relic rarity 'event' relics are only obtainable through events (`randomRelicId('event')` is supported).
+
+## Simulator (src/sim, `npm run sim -- --runs 200 --blight 0 [--compare] [--picks rated|random|none] [--verbose --index N] [--card-test --per 30]`)
+Heuristic bot (`bot.ts`): beam search over card sequences with the real engine on a clone whose draw pile is re-shuffled (no peeking), scored by
+`evalState`; ratings in `ratings.ts`. Reports to stdout and /tmp/claude-0/sim-report.json (card test: /tmp/claude-0/sim-cardtest.json).

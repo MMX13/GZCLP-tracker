@@ -31,7 +31,8 @@ export function Hand({ views, sel, disabled, onTap, onDrop, onZoom, onHover, onD
   const ref = useRef<HTMLDivElement>(null);
   const W = useWidth(ref);
   const n = views.length;
-  const cw = Math.max(88, Math.min(132, Math.round(W * 0.3)));
+  const short = typeof window !== 'undefined' && window.innerHeight < 700;
+  const cw = Math.max(88, Math.min(132, Math.round(W * (short ? 0.28 : 0.3))));
   const ch = Math.round(cw * 1.42);
   const step = n <= 1 ? 0 : Math.min(cw * 0.94, (W - cw - 26) / (n - 1));
   const x0 = (W - (cw + step * (n - 1))) / 2;

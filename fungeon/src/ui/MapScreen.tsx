@@ -9,7 +9,7 @@ import { useTip } from './kit';
 import { ACT_NAMES } from './store';
 
 const ROW = 88;
-const TOP = 210; // room for the boss header
+const TOP = 250; // room for the boss header
 const BOT = 110;
 const NODE_LABEL: Record<string, string> = {
   fight: 'Fight', elite: 'Elite fight', rest: 'Dewdrop Glade (rest)', shop: 'Shop', event: 'Mystery event', treasure: 'Treasure', boss: 'Boss',
