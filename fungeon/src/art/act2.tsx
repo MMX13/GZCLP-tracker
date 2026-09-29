@@ -100,8 +100,7 @@ export function Centipede() {
 export function Spider() {
   return (<>
     <Shadow rx={34} />
-    <Ln d="M50 0 L50 26" w={2} c="#e8e0d0" />
-    <path d="M10 4 L50 20 L92 4 M4 28 L50 40 L98 28" fill="none" stroke="#e8e0d0" strokeWidth={1.8} />
+    <Ln d="M56 -4 L56 46" w={2.5} c="#e8e0d0" />
     <Ln d="M40 56 L14 44 L6 66 M40 64 L10 72 L12 90 M60 56 L86 44 L94 66 M60 64 L90 72 L88 90" w={4.5} />
     <ellipse cx="60" cy="62" rx="24" ry="22" fill="#5a4a78" />
     <path d="M52 54 l8 10 l8 -10 l-8 20z" fill={P.red} strokeWidth={2.5} />

@@ -113,10 +113,11 @@ export function StagBeetle() {
     <Ln d="M22 84 L90 84" w={4} c={P.gold} />
     <ellipse cx="42" cy="40" rx="9" ry="4" fill="#fff" opacity="0.3" transform="rotate(-20 42 40)" stroke="none" />
     {/* head/helmet */}
-    <circle cx="26" cy="62" r="17" fill="#5a5480" />
-    <path d="M10 60 Q12 44 30 46 L34 56 L14 62Z" fill="#a8a2c8" />
-    <Ln d="M22 48 Q28 32 40 36" w={4} c={P.red} />
-    <Eye x={20} y={66} r={6} /><Cheek x={18} y={75} r={3.5} />
+    <circle cx="25" cy="62" r="21" fill="#5a5480" />
+    <path d="M6 56 Q8 36 26 36 Q44 38 46 56 Q36 50 26 52 Q14 50 6 56Z" fill="#a8a2c8" />
+    <Ln d="M22 38 Q28 22 42 28" w={4} c={P.red} />
+    <WEye x={15} y={66} r={8} /><WEye x={34} y={64} r={6.5} />
+    <Cheek x={12} y={77} r={4} /><Smile x={26} y={77} w={4} h={2} />
     {/* mandible horns */}
     <path d="M12 72 Q-2 70 2 50 Q4 44 10 48 Q8 58 16 64" fill={P.brown} />
     <path d="M18 76 Q4 88 0 70" fill="none" strokeWidth={4} />

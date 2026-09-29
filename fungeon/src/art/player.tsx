@@ -1,42 +1,41 @@
 import { Eye, Cheek, Hl, Ln, Smile, Shadow, P, INK, Dot } from './kit';
 
-/** Pip, the round button mushroom. Faces right. Also used (face only) for the app icon. */
+/** Pip, the round button mushroom. Faces right. Face sits right under the cap. */
 export function Pip() {
   return (
     <>
       <Shadow rx={28} />
-      {/* feet */}
-      <ellipse cx="41" cy="90" rx="9" ry="5" fill="#f3dcb4" />
-      <ellipse cx="62" cy="90" rx="9" ry="5" fill="#f3dcb4" />
-      {/* twig sword behind */}
-      <Ln d="M76 76 L93 42" w={5} c={INK} />
-      <Ln d="M76 76 L93 42" w={2.4} c="#a9744a" />
-      <path d="M93 42 q6 -8 2 -14 q-8 4 -2 14z" fill={P.lime} />
-      <Ln d="M84 62 l6 -2" w={2.5} />
+      <ellipse cx="36" cy="91" rx="10" ry="5" fill="#f3dcb4" />
+      <ellipse cx="64" cy="91" rx="10" ry="5" fill="#f3dcb4" />
+      {/* twig sword, held out to the right */}
+      <Ln d="M89 80 L94 34" w={6} c={INK} />
+      <Ln d="M89 80 L94 34" w={2.6} c="#b9855a" />
+      <path d="M94 34 q7 -7 3 -15 q-9 5 -3 15z" fill={P.lime} strokeWidth={3} />
+      <Ln d="M86 62 l8 -2" w={3} />
+      {/* leaf satchel on the left hip */}
+      <path d="M3 68 q2 -10 15 -8 q3 13 -8 20 q-9 -2 -7 -12z" fill={P.moss} />
+      <Ln d="M6 76 q6 -6 10 -12" w={2} />
       {/* body */}
-      <path d="M28 54 Q23 91 50 91 Q77 91 72 54Z" fill="#f3dcb4" />
-      <Hl x={35} y={72} rx={3} ry={8} r={10} />
-      {/* satchel strap + leaf bag */}
-      <Ln d="M30 60 L68 84" w={3} />
-      <path d="M22 76 q4 -10 16 -8 q2 12 -8 16 q-9 0 -8 -8z" fill={P.moss} />
-      <Ln d="M24 82 q6 -6 12 -12" w={2} />
-      {/* arm */}
-      <circle cx="74" cy="76" r="6.5" fill="#f3dcb4" />
+      <path d="M22 48 Q15 92 50 92 Q85 92 78 48Z" fill="#f3dcb4" />
+      <Hl x={27} y={72} rx={2.6} ry={8} r={8} />
+      <Ln d="M22 56 Q16 60 15 68" w={3} />
+      {/* arm holding sword */}
+      <circle cx="85" cy="76" r="6.5" fill="#f3dcb4" />
       {/* face */}
-      <Eye x={48} y={70} r={6.5} />
-      <Eye x={64} y={70} r={6.5} />
-      <Cheek x={41} y={79} r={4.5} />
-      <Cheek x={69} y={79} r={4.5} />
-      <Smile x={56} y={77} w={4.5} h={3} />
+      <Eye x={39} y={64} r={8} />
+      <Eye x={62} y={64} r={8} />
+      <Cheek x={28} y={75} r={5} />
+      <Cheek x={72} y={75} r={5} />
+      <Smile x={50} y={73} w={5} h={3.5} />
       {/* cap */}
-      <path d="M12 52 Q10 12 50 12 Q90 12 88 52 Q88 60 78 60 L22 60 Q12 60 12 52Z" fill={P.cream} />
-      <Ln d="M22 60 Q50 66 78 60" w={2.5} />
-      <ellipse cx="34" cy="26" rx="9" ry="4.5" fill="#fff" opacity="0.7" transform="rotate(-25 34 26)" stroke="none" />
-      <circle cx="64" cy="26" r="5.5" fill={P.beige} strokeWidth={2.5} />
-      <circle cx="74" cy="44" r="4.5" fill={P.beige} strokeWidth={2.5} />
-      <circle cx="42" cy="43" r="4" fill={P.beige} strokeWidth={2.5} />
-      <circle cx="24" cy="46" r="3.5" fill={P.beige} strokeWidth={2.5} />
-      <Dot x={49} y={20} r={2.2} c={P.beige} />
+      <path d="M17 44 Q14 8 50 8 Q86 8 83 44 Q83 51 74 51 L26 51 Q17 51 17 44Z" fill={P.cream} />
+      <Ln d="M26 51 Q50 57 74 51" w={2.5} />
+      <ellipse cx="34" cy="20" rx="9" ry="4" fill="#fff" opacity="0.75" transform="rotate(-25 34 20)" stroke="none" />
+      <circle cx="62" cy="21" r="5.5" fill={P.beige} strokeWidth={2.5} />
+      <circle cx="72" cy="38" r="4" fill={P.beige} strokeWidth={2.5} />
+      <circle cx="44" cy="36" r="3.6" fill={P.beige} strokeWidth={2.5} />
+      <circle cx="26" cy="38" r="3.2" fill={P.beige} strokeWidth={2.5} />
+      <Dot x={50} y={14} r={2} c={P.beige} />
     </>
   );
 }

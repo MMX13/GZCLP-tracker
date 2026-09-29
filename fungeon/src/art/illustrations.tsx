@@ -34,6 +34,20 @@ const Flask = ({ c, glow = false }: { c: string; glow?: boolean }) => (
   </>
 );
 
+const AcornShape = () => (
+  <>
+    <clipPath id="fg-acorn-cap"><path d="M14 48 C10 20 32 14 50 14 C68 14 90 20 86 48 Q50 58 14 48Z" /></clipPath>
+    <path d="M20 46 C16 74 36 94 50 98 C64 94 84 74 80 46Z" fill="#d9a866" />
+    <Hl x={34} y={66} rx={3.5} ry={11} r={12} o={0.6} />
+    <path d="M14 48 C10 20 32 14 50 14 C68 14 90 20 86 48 Q50 58 14 48Z" fill="#8a5a3a" />
+    <g clipPath="url(#fg-acorn-cap)" fill="none" stroke={P.dbrown} strokeWidth={2.6}>
+      <path d="M8 22 L48 62 M8 34 L36 62 M22 14 L60 56 M38 12 L76 52 M54 12 L92 50 M70 12 L98 40" />
+      <path d="M92 22 L52 62 M92 34 L64 62 M78 14 L40 56 M62 12 L24 52 M46 12 L8 50 M30 12 L2 40" />
+    </g>
+    <Hl x={32} y={26} rx={8} ry={3} r={-25} o={0.45} />
+    <Ln d="M50 15 V5" w={6} c={INK} /><Ln d="M50 15 V5" w={2.5} c="#b9855a" />
+  </>
+);
 export const ILLUSTRATIONS: Record<string, F> = {
   bonk: () => (<><Burst c={P.gold} r={44} /><g transform="rotate(35 50 50)"><rect x="40" y="18" width="20" height="30" rx="8" fill={P.brown} /><rect x="45" y="46" width="10" height="38" rx="5" fill="#b9855a" /></g></>),
   headbutt: () => (<><Ln d="M8 30 h18 M4 50 h22 M8 70 h18" w={4} /><Cap x={58} y={62} s={1.2} /><Burst cx={90} cy={20} r={14} n={6} /><Stem x={58} y={62} h={0} /></>),
@@ -45,10 +59,10 @@ export const ILLUSTRATIONS: Record<string, F> = {
   'twin-caps': () => (<><Stem x={32} y={56} w={12} h={26} /><Cap x={32} y={58} s={0.85} /><Stem x={70} y={48} w={12} h={34} /><Cap x={70} y={50} s={0.95} c={P.orange} /></>),
   'puffball-pop': () => (<><circle cx="50" cy="56" r="28" fill={P.cream} /><Hl x={40} y={44} rx={9} ry={4} r={-30} o={0.7} /><Ln d="M50 10 v10 M20 20 l8 8 M80 20 l-8 8 M8 56 h10 M82 56 h10" w={4} /><Dot x={60} y={64} r={4} c={P.beige} /><Dot x={40} y={68} r={3} c={P.beige} /><Dot x={52} y={90} r={3} c={P.gold} /></>),
   stinkhorn: () => (<><Stem x={50} y={40} w={18} h={50} /><path d="M38 44 C36 14 64 14 62 44Z" fill="#8b9a3a" /><Hl x={44} y={26} rx={4} ry={6} r={10} /><Ln d="M20 30 q-6 -8 0 -14 q6 -8 0 -14 M80 34 q6 -8 0 -14 q-6 -8 0 -14" w={3.5} c={P.sick} /></>),
-  fang: () => (<><path d="M22 14 C22 40 34 76 50 92 C68 74 80 40 78 14 Q50 26 22 14Z" fill={P.cream} /><Hl x={38} y={34} rx={4} ry={12} r={-10} o={0.8} /><Ln d="M8 14 h84" w={6} c={P.red} /></>),
+  fang: () => (<><path d="M22 12 Q52 24 80 12 C86 44 68 76 32 94 C42 74 22 50 22 12Z" fill={P.cream} /><path d="M80 12 C86 44 68 76 32 94 C48 70 64 44 62 20Z" fill="#e6d3ae" strokeWidth={0} /><path d="M22 12 Q52 24 80 12 C86 44 68 76 32 94 C42 74 22 50 22 12Z" fill="none" /><Hl x={32} y={38} rx={3.5} ry={13} r={-12} o={0.9} /><Ln d="M8 12 h84" w={6} c={P.red} /></>),
   'mycelium-lash': () => (<><Ln d="M10 82 C30 60 10 40 40 34 C64 30 60 12 90 14" w={12} c={INK} /><Ln d="M10 82 C30 60 10 40 40 34 C64 30 60 12 90 14" w={6} c={P.cream} /><Ln d="M28 68 l-12 2 M24 46 l-8 -6 M56 26 l4 12 M74 20 l2 -10" w={3} /></>),
   avalanche: () => (<><circle cx="30" cy="30" r="16" fill={P.grey} /><circle cx="66" cy="44" r="20" fill="#a39c8c" /><circle cx="40" cy="72" r="14" fill="#7c766a" /><circle cx="80" cy="82" r="9" fill={P.grey} /><Hl x={62} y={36} rx={6} ry={3} r={-30} /><Hl x={26} y={24} rx={5} ry={2.5} r={-30} /><Ln d="M12 8 v10 M52 4 v8" w={3.5} /></>),
-  'acorn-toss': () => (<><Ln d="M4 70 h20 M10 84 h18 M2 56 h18" w={4} /><g transform="rotate(-25 62 50)"><path d="M40 44 h44 q0 -22 -22 -24 q-22 2 -22 24z" fill={P.dbrown} /><path d="M42 44 q20 40 20 44 q0 -4 20 -44z" fill="#d9a866" /><Hl x={52} y={62} rx={3} ry={8} r={15} /><Ln d="M62 20 v-8" w={4} /></g></>),
+  'acorn-toss': () => (<><Ln d="M4 70 h20 M10 84 h18 M2 56 h18" w={4} /><g transform="translate(20 -6) rotate(-25 50 50) scale(.8)"><AcornShape /></g></>),
   'gill-slice': () => (<><path d="M8 52 C8 20 30 12 50 12 C70 12 92 20 92 52Z" fill={P.red} /><path d="M10 52 h80 l-6 16 h-68z" fill={P.beige} /><Ln d="M22 54 l-2 12 M34 54 l-1 13 M46 54 v14 M58 54 l1 13 M70 54 l2 12" w={2.2} /><Ln d="M22 92 L88 26" w={7} c={INK} /><Ln d="M22 92 L88 26" w={3} c={W} /></>),
   'cap-shield': () => (<><path d="M50 8 C82 8 92 24 88 48 C84 74 66 88 50 94 C34 88 16 74 12 48 C8 24 18 8 50 8Z" fill={P.red} /><circle cx="34" cy="34" r="7" fill={P.cream} strokeWidth={2.5} /><circle cx="64" cy="30" r="5" fill={P.cream} strokeWidth={2.5} /><circle cx="56" cy="60" r="8" fill={P.cream} strokeWidth={2.5} /><circle cx="30" cy="62" r="4" fill={P.cream} strokeWidth={2.5} /><Hl x={26} y={22} rx={8} ry={3} r={-35} /></>),
   'mossy-wall': () => (<><rect x="8" y="26" width="84" height="64" rx="6" fill="#a39c8c" /><Ln d="M8 48 h84 M8 70 h84 M36 26 v22 M64 26 v22 M22 48 v22 M50 48 v22 M78 48 v22 M36 70 v20 M64 70 v20" w={3} /><path d="M6 30 C6 14 26 16 34 24 C46 14 58 20 62 26 C74 18 92 20 94 30 L94 34 L6 34Z" fill={P.moss} /><Dot x={20} y={44} r={4} c={P.moss} /><Dot x={80} y={62} r={4} c={P.moss} /></>),
@@ -83,7 +97,7 @@ export const ILLUSTRATIONS: Record<string, F> = {
   'spore-heart': () => (<><path d="M50 88 C10 62 6 32 26 22 C40 16 50 26 50 34 C50 26 60 16 74 22 C94 32 90 62 50 88Z" fill={P.red} /><Hl x={30} y={34} rx={7} ry={4} r={-40} o={0.6} />{[[34, 48], [60, 44], [50, 66]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={5} fill={P.gold} strokeWidth={2.5} />)}<Dot x={86} y={12} r={4} c={P.gold} /><Dot x={12} y={12} r={3} c={P.gold} /></>),
   crown: () => (<><path d="M12 76 L8 30 L32 50 L50 18 L68 50 L92 30 L88 76Z" fill={P.gold} /><Ln d="M12 76 h76" w={4} /><rect x="12" y="70" width="76" height="14" rx="4" fill="#e0a92e" /><circle cx="50" cy="62" r="6" fill={P.red} strokeWidth={3} /><circle cx="28" cy="64" r="4" fill={P.teal} strokeWidth={2.5} /><circle cx="72" cy="64" r="4" fill={P.teal} strokeWidth={2.5} /><Hl x={40} y={40} rx={4} ry={8} r={20} o={0.6} /></>),
   lantern: () => (<><Ln d="M36 22 Q50 -2 64 22" w={4} /><path d="M32 22 h36 l4 10 h-44z" fill="#6f6f78" /><path d="M28 32 h44 l4 46 h-52z" fill={P.gold} opacity="0.9" /><Ln d="M50 32 v46" w={3} /><rect x="24" y="78" width="52" height="12" rx="4" fill="#6f6f78" /><circle cx="50" cy="56" r="10" fill="#fff8c8" strokeWidth={2.5} /><Hl x={38} y={44} rx={3} ry={7} r={10} /></>),
-  acorn: () => (<><path d="M22 44 h56 q0 -28 -28 -30 q-28 2 -28 30z" fill={P.dbrown} /><Ln d="M50 14 v-8" w={5} /><path d="M26 44 q24 60 24 50 q0 10 24 -50z" fill="#d9a866" /><Hl x={38} y={64} rx={3} ry={10} r={15} o={0.6} /><Ln d="M32 28 l8 8 M54 22 l8 8" w={2.2} c={P.deep} /></>),
+  acorn: () => <AcornShape />,
   'snail-shell': () => (<><circle cx="50" cy="52" r="40" fill="#e58a3c" /><path d="M50 50 m0 -4 a4 4 0 1 1 -4 4 a10 10 0 1 1 10 10 a18 18 0 1 1 -18 -18 a26 26 0 1 1 26 26" fill="none" strokeWidth={4} /><Hl x={32} y={28} rx={9} ry={4} r={-40} /></>),
   feather: () => (<><path d="M16 88 C6 40 46 6 90 8 C90 54 56 90 16 88Z" fill="#9ed0e6" /><Ln d="M14 90 L78 22" w={4} /><Ln d="M38 62 l-2 -14 M52 48 l-2 -14 M62 38 l10 2 M40 70 l10 -2 M28 78 l10 -4" w={2.5} /><Hl x={44} y={30} rx={10} ry={3} r={-40} o={0.6} /></>),
   pebble: () => (<><path d="M10 72 C8 42 30 22 56 26 C82 28 94 52 88 72 C84 86 20 88 10 72Z" fill="#a39c8c" /><Hl x={34} y={40} rx={9} ry={4} r={-30} /><Ln d="M60 50 q8 2 12 10" w={2.5} /><circle cx="30" cy="66" r="3" fill="#7c766a" strokeWidth={0} /></>),
