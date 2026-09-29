@@ -64,8 +64,9 @@ export function RewardScreen({ run }: { run: RunState }) {
           )}
           <div className="row gap">
             <Btn testid="card-take" disabled={cardSel === null} onClick={() => { dispatch({ type: 'takeReward', index: pick, cardIndex: cardSel! }); setPick(null); }}>Add to deck</Btn>
-            <Btn testid="card-skip" kind="secondary" onClick={() => { dispatch({ type: 'skipReward', index: pick }); setPick(null); }}>Skip</Btn>
+            <Btn testid="card-skip" kind="secondary" onClick={() => { dispatch({ type: 'skipReward', index: pick }); setPick(null); }}>Skip card</Btn>
           </div>
+          <p className="muted small center" style={{ marginTop: 8 }}>Skip = no card. Close (X) = decide later.</p>
         </Sheet>
       )}
     </div>
