@@ -131,6 +131,7 @@ export function ShopScreen({ run }: { run: RunState }) {
     }
   }
   return (
+    <div className="screen-wrap">
     <div className="screen shop" data-testid="shop">
       <div className="shop-head">
         <div className="merchant"><Art k="merchant" size={92} /></div>
@@ -167,7 +168,8 @@ export function ShopScreen({ run }: { run: RunState }) {
       <div className="loot-list">
         <Loot testid="shop-remove" art={<Icon name="skull" size={38} />} title="Compost a card" sub={shop.removeUsed ? 'Already used this visit' : 'Remove a card from your deck'} price={shop.removePrice} sold={shop.removeUsed} disabled={gold < shop.removePrice} onClick={() => !shop.removeUsed && (gold >= shop.removePrice ? dispatch({ type: 'shopRemove' }) : audio.play('error'))} />
       </div>
-      <div className="screen-foot sticky"><Btn big testid="proceed" onClick={() => dispatch({ type: 'proceed' })} icon="arrow">Leave shop</Btn></div>
+    </div>
+      <div className="screen-foot bar"><Btn big testid="proceed" onClick={() => dispatch({ type: 'proceed' })} icon="arrow">Leave shop</Btn></div>
       {pick && body && (
         <Sheet title={title} onClose={() => setPick(null)} testid="shop-sheet">
           <div className="center stack">

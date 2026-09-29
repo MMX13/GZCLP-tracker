@@ -1,10 +1,13 @@
 .screen { position: relative; height: 100%; overflow-y: auto; padding: 14px 14px 18px; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
+.screen > * { flex-shrink: 0; }
 .screen h1 { text-align: center; font-size: 1.7rem; text-shadow: 0 3px 0 var(--ink); }
 .screen h3 { color: var(--gold); font-size: 1.1rem; margin-top: 4px; }
 .screen-foot { margin-top: auto; padding-top: 10px; display: flex; justify-content: center; }
 .screen-foot { gap: 10px; }
 .screen-foot .btn { min-width: 140px; }
-.screen-foot.sticky { position: sticky; bottom: -18px; background: linear-gradient(#0000, #1f1a14 40%); padding-bottom: 14px; }
+.screen-wrap { position: relative; height: 100%; display: flex; flex-direction: column; }
+.screen-wrap > .screen { flex: 1; min-height: 0; height: auto; }
+.screen-foot.bar { margin: 0; padding: 10px 14px calc(12px + env(safe-area-inset-bottom)); background: #1f1a14; box-shadow: 0 -10px 16px #1f1a14; position: relative; z-index: 2; }
 .big-text { font: 600 1.3rem var(--font-h); }
 
 .reward-list { display: flex; flex-direction: column; gap: 10px; }
