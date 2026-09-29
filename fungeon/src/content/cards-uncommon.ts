@@ -23,7 +23,7 @@ export const UNCOMMON_CARDS: CardDef[] = [
   },
   {
     id: 'contagion', name: 'Contagion', type: 'skill', rarity: 'uncommon', cost: 1, upCost: 0, target: 'enemy',
-    vals: {}, text: "Give the target's Rot to all other enemies.", art: 'fester',
+    vals: {}, text: "Copy the target's Rot to all other enemies.", art: 'fester',
     play: (api, _v, t) => {
       const r = api.status(t!, 'rot');
       if (r <= 0) return;

@@ -6,14 +6,15 @@ const [, , url = 'http://localhost:4173/', out = '/tmp/claude-0', maxSteps = '40
 mkdirSync(out, { recursive: true });
 const exe = existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined;
 const browser = await chromium.launch({ executablePath: exe });
-const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+const VW = +(process.env.VW ?? 390), VH = +(process.env.VH ?? 844);
+const ctx = await browser.newContext({ viewport: { width: VW, height: VH }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const page = await ctx.newPage();
 const errors = [];
 page.on('pageerror', (e) => { errors.push(e.message); console.log('PAGE ERROR', e.message); });
 page.on('console', (m) => m.type() === 'error' && !/ERR_CERT|404|Failed to load/.test(m.text()) && console.log('console error:', m.text()));
 await page.goto(url);
 await page.waitForTimeout(500);
-const shot = async (name) => { await page.screenshot({ path: `${out}/${name}.png` }); console.log('shot', name); };
+const shot = async (name) => { await page.screenshot({ path: `${out}/${name}${VW === 390 ? '' : '-' + VW}.png` }); console.log('shot', name); };
 const seen = new Set();
 const once = async (name) => { if (!seen.has(name)) { seen.add(name); await shot(name); } };
 const tid = (id) => page.locator(`[data-testid="${id}"]`);
@@ -39,6 +40,9 @@ for (let step = 0; step < +maxSteps; step++) {
     await n.tap({ force: true });
   } else if (k === 'combat') {
     if (!seen.has('combat')) { seen.add('combat'); await page.waitForTimeout(800); await shot('04-combat'); }
+    if (await page.locator('[data-testid^="plot-"].full').count()) await once('05b-garden');
+    if (await page.locator('.enemy .status').count()) await once('05c-enemy-status');
+    if (await page.locator('.pip .status').count()) await once('05d-pip-status');
     const cards = page.locator('[data-testid^="card-"][data-playable="1"]');
     if (await tid('pending').count()) {
       await once('pending');

@@ -6,7 +6,7 @@ export const RARE_CARDS: CardDef[] = [
   // ---------------- Powers (4)
   {
     id: 'spore_heart', name: 'Spore Heart', type: 'power', rarity: 'rare', cost: 1, target: 'none',
-    vals: { n: 1 }, up: { n: 2 }, text: 'At the start of your turn, add {n} Spore to your hand.', art: 'spore-heart',
+    vals: { n: 1 }, up: { n: 2 }, text: 'At the start of your turn, add a Spore to your hand.', upText: 'At the start of your turn, add {n} Spores to your hand.', art: 'spore-heart',
     flavor: 'It beats in threes. Sometimes fours.',
     play: (api, v) => { api.apply(PLAYER, 'pw_spore_heart', v.n); },
   },
