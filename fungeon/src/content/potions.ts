@@ -1,4 +1,30 @@
-import type { PotionDef } from '../engine/types';
+import { PLAYER, type PotionDef } from '../engine/types';
 
-// STUB - to be replaced.
-export const POTION_LIST: PotionDef[] = [];
+export const POTION_LIST: PotionDef[] = [
+  { id: 'sting_brew', name: 'Sting Brew', rarity: 'common', target: 'enemy', icon: 'potion-red', desc: 'Deal 12 damage.',
+    use: (api, t) => { api.attack(t!, 12); } },
+  { id: 'moss_tonic', name: 'Moss Tonic', rarity: 'common', target: 'none', icon: 'potion-green', desc: 'Gain 10 Block.',
+    use: (api) => { api.gainBlock(10, false); } },
+  { id: 'clarity_dew', name: 'Clarity Dew', rarity: 'common', target: 'none', icon: 'potion-blue', desc: 'Draw 3 cards.',
+    use: (api) => { api.draw(3); } },
+  { id: 'spark_syrup', name: 'Spark Syrup', rarity: 'common', target: 'none', icon: 'potion-gold', desc: 'Gain 2 Spores.',
+    use: (api) => { api.gainEnergy(2); } },
+  { id: 'rot_tincture', name: 'Rot Tincture', rarity: 'common', target: 'enemy', icon: 'potion-purple', desc: 'Apply 8 Rot.',
+    use: (api, t) => { api.apply(t!, 'rot', 8); } },
+  { id: 'spore_flask', name: 'Spore Flask', rarity: 'common', target: 'none', icon: 'potion-teal', desc: 'Add 3 Spore+ to your hand.',
+    use: (api) => { api.addCard('spore', 'hand', 3, true); } },
+  { id: 'mighty_mead', name: 'Mighty Mead', rarity: 'uncommon', target: 'none', icon: 'potion-red', desc: 'Gain 3 Might.',
+    use: (api) => { api.apply(PLAYER, 'might', 3); } },
+  { id: 'sturdy_sap', name: 'Sturdy Sap', rarity: 'uncommon', target: 'none', icon: 'potion-green', desc: 'Gain 3 Sturdy and 3 Prickly.',
+    use: (api) => { api.apply(PLAYER, 'sturdy', 3); api.apply(PLAYER, 'prickly', 3); } },
+  { id: 'healing_honey', name: 'Healing Honey', rarity: 'uncommon', target: 'none', icon: 'potion-gold', desc: 'Heal 15 HP.',
+    use: (api) => { api.heal(PLAYER, 15); } },
+  { id: 'growth_gel', name: 'Growth Gel', rarity: 'uncommon', target: 'none', icon: 'potion-teal', desc: 'Grow all your Plants by 2.',
+    use: (api) => { api.growPlants(2); } },
+  { id: 'nutrient_nectar', name: 'Nutrient Nectar', rarity: 'uncommon', target: 'none', icon: 'potion-green', desc: 'Gain 3 Nutrients.',
+    use: (api) => { api.gainNutrients(3); } },
+  { id: 'plague_flask', name: 'Plague Flask', rarity: 'rare', target: 'none', icon: 'potion-purple', desc: 'Apply 7 Rot to ALL enemies.',
+    use: (api) => { api.applyAll('rot', 7); } },
+  { id: 'elder_elixir', name: 'Elder Elixir', rarity: 'rare', target: 'none', icon: 'potion-blue', desc: 'Gain 2 Spores, draw 3 cards and gain 8 Block.',
+    use: (api) => { api.gainEnergy(2); api.draw(3); api.gainBlock(8, false); } },
+];
