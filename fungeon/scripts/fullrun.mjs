@@ -19,17 +19,20 @@ const seen = new Set();
 const shot = async (n) => { if (!seen.has(n)) { seen.add(n); await page.screenshot({ path: `${out}/${n}.png` }); console.log('shot', n); } };
 const settle = async () => { for (let i = 0; i < 80; i++) { if (!(await t('skip').count())) return; await page.waitForTimeout(100); } };
 await t('new-run').tap({ force: true }); await t('start-run').tap({ force: true }); await page.waitForTimeout(500);
-let lastAct = 0, rewardTries = 0;
+let combatSteps = 0, lastAct = 0, rewardTries = 0;
 for (let step = 0; step < 3000; step++) {
   await settle();
   const k = await kind();
   if (k !== 'reward') rewardTries = 0;
+  if (k !== 'combat') combatSteps = 0;
   if (k === 'title') break;
+  if (step % 25 === 0) console.log('step', step, k, JSON.stringify(await page.evaluate(() => { const r = window.__fg?.run; return r && { act: r.act, floor: r.floor, hp: r.hp, scr: r.screen.kind, en: r.screen.combat?.enemies.map((e) => e.id + ':' + e.hp + (e.alive ? '' : 'x')), hand: r.screen.combat?.hand.length, pend: !!r.screen.combat?.pending, ph: r.screen.combat?.phase }; })));
   const info = await page.evaluate(() => { const r = window.__fg?.run; return r ? { act: r.act, floor: r.floor } : null; });
   if (k === 'map') {
     if (info && info.act !== lastAct) { lastAct = info.act; await page.waitForTimeout(300); await shot(`map-act${info.act}`); await page.evaluate(() => document.querySelector('.map-scroll').scrollTo(0, 0)); await page.waitForTimeout(150); await shot(`map-act${info.act}-top`); }
     await page.locator('.node.selectable').first().tap({ force: true });
   } else if (k === 'combat') {
+    if (++combatSteps === 60) { await page.screenshot({ path: `${out}/stuck-combat.png` }); console.log('STUCK', JSON.stringify(await page.$$eval('.hand-slot', (e) => e.map((x) => x.dataset.card + ':' + x.dataset.playable))), await page.locator('.app').innerText().then((x) => x.replace(/\n/g, '|').slice(0, 400))); break; }
     await page.evaluate(() => window.__fg.cheat((r) => { const c = r.screen.combat; if (!c) return; c.enemies.forEach((e) => { e.hp = Math.min(e.hp, 1); }); c.player.hp = c.player.maxHp; c.player.block = 50; }));
     await page.waitForTimeout(100);
     if (await t('proceed').count()) { await t('proceed').tap({ force: true }); continue; }
@@ -52,7 +55,13 @@ for (let step = 0; step < 3000; step++) {
       await rows.first().tap({ force: true }); await page.waitForTimeout(250);
       if (await t('card-reward').count()) { await shot('cardreward'); await t('reward-card-0').tap({ force: true }); await t('card-take').tap({ force: true }); }
     } else { if (await page.locator('.loot.blocked').count()) await shot('reward-brews-full'); await t('proceed').tap({ force: true }); rewardTries = 0; }
-  } else if (k === 'rest') { if (await t('rest-heal').count()) await t('rest-heal').tap({ force: true }); else await t('proceed').tap({ force: true }); }
+  } else if (k === 'rest') {
+    if (await t('rest-heal').isEnabled()) await t('rest-heal').tap({ force: true });
+    else if (await t('rest-upgrade').isEnabled()) await t('rest-upgrade').tap({ force: true });
+    else await t('proceed').tap({ force: true });
+    await page.waitForTimeout(200);
+    if ((await kind()) === 'rest') { await shot('rest-stuck'); await t('proceed').tap({ force: true }); }
+  }
   else if (k === 'shop') await t('proceed').tap({ force: true });
   else if (k === 'event') await page.locator('[data-testid^="event-choice-"]:not([disabled])').first().tap({ force: true });
   else if (k === 'treasure') { if (await t('treasure-chest').isEnabled()) await t('treasure-chest').tap({ force: true }); else await t('proceed').tap({ force: true }); }
