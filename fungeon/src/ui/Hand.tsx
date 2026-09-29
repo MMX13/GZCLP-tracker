@@ -92,7 +92,7 @@ export function Hand({ views, sel, disabled, onTap, onDrop, onZoom, onHover, onD
       {views.map((v, i) => {
         const off = i - (n - 1) / 2;
         const rot = off * perRot;
-        const dropY = Math.abs(off) ** 2 * (n > 7 ? 1 : 1.8);
+        const dropY = Math.abs(off) ** 2 * (n > 7 ? 0.45 : 1.8);
         const isSel = sel === v.uid;
         const isDrag = drag?.uid === v.uid;
         let tf = `translateY(${dropY + 6}px) rotate(${rot}deg)`;

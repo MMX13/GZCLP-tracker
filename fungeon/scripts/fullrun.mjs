@@ -45,13 +45,13 @@ for (let step = 0; step < 3000; step++) {
     } else await t('end-turn').tap({ force: true });
   } else if (k === 'reward') {
     await shot(`reward-act${info?.act}`);
-    const rows = page.locator('[data-testid^="reward-"]:not([data-testid^="reward-card"])');
     rewardTries++;
-    if ((await rows.count()) && rewardTries < 6) {
+    if (await t('card-reward').count()) { await t('reward-card-0').tap({ force: true }); await t('card-take').tap({ force: true }); continue; }
+    const rows = page.locator('[data-testid^="reward-"]:not([data-testid^="reward-card"]):not(.blocked)');
+    if ((await rows.count()) && rewardTries < 8) {
       await rows.first().tap({ force: true }); await page.waitForTimeout(250);
       if (await t('card-reward').count()) { await shot('cardreward'); await t('reward-card-0').tap({ force: true }); await t('card-take').tap({ force: true }); }
-    } else await t('proceed').tap({ force: true });
-    if (rewardTries >= 6) { await t('proceed').tap({ force: true }); rewardTries = 0; }
+    } else { if (await page.locator('.loot.blocked').count()) await shot('reward-brews-full'); await t('proceed').tap({ force: true }); rewardTries = 0; }
   } else if (k === 'rest') { if (await t('rest-heal').count()) await t('rest-heal').tap({ force: true }); else await t('proceed').tap({ force: true }); }
   else if (k === 'shop') await t('proceed').tap({ force: true });
   else if (k === 'event') await page.locator('[data-testid^="event-choice-"]:not([disabled])').first().tap({ force: true });
