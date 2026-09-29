@@ -1,0 +1,27 @@
+{
+  "name": "fungeon",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Fungeon - a mobile-first mushroom roguelike deckbuilder.",
+  "scripts": {
+    "build": "node build.mjs",
+    "build:single": "node build.mjs --single",
+    "dev": "node build.mjs --dev && npx --yes serve dist",
+    "test": "tsx --test src/**/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "sim": "tsx src/sim/sim.ts"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "esbuild": "^0.27.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0"
+  }
+}
