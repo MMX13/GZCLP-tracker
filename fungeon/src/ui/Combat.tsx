@@ -261,6 +261,15 @@ export function Combat() {
           </div>
           <Garden combat={combat} run={run!} fx={fx} onZoom={setZoom} />
         </div>
+        {focus && !targetHint && (
+          <div className="sel-info" data-testid="sel-info">
+            <b>{focus.name}</b>
+            <span>{focus.text}</span>
+            {!focus.playable && focus.reason && <em>{focus.reason}</em>}
+            {focus.playable && !focus.targeted && <small>Tap again or drag up to play</small>}
+            {focus.playable && focus.targeted && <small>{alive.length === 1 ? 'Tap again to play' : 'Tap an enemy or drag onto one'}</small>}
+          </div>
+        )}
       </div>
 
       <div className="dock">
@@ -276,21 +285,12 @@ export function Combat() {
           <button className="pile" key={`x${fx.discardFlash}`} onClick={() => setPile('discard')} data-testid="pile-discard" aria-label="Discard pile"><Icon name="discard" size={22} /><b>{combat.discard.length}</b></button>
           <button className="pile" key={`c${fx.compostFlash}`} onClick={() => setPile('compost')} data-testid="pile-compost" aria-label="Compost pile"><Icon name="compost" size={22} /><b>{combat.compost.length}</b></button>
         </div>
-        <button className="end-turn" disabled={!canAct} onClick={() => { setSel(null); dispatch({ type: 'endTurn' }); }} data-testid="end-turn">
+        <button className={`end-turn ${views.every((v) => !v.playable) ? 'pulse' : ''}`} disabled={!canAct} onClick={() => { setSel(null); dispatch({ type: 'endTurn' }); }} data-testid="end-turn">
           End Turn
         </button>
       </div>
 
       <div className="hand-zone">
-        {focus && !targetHint && (
-          <div className="sel-info" data-testid="sel-info">
-            <b>{focus.name}</b>
-            <span>{focus.text}</span>
-            {!focus.playable && focus.reason && <em>{focus.reason}</em>}
-            {focus.playable && !focus.targeted && <small>Tap again or drag up to play</small>}
-            {focus.playable && focus.targeted && <small>{alive.length === 1 ? 'Tap again to play' : 'Tap an enemy or drag onto one'}</small>}
-          </div>
-        )}
         <Hand
           views={views}
           sel={sel}
