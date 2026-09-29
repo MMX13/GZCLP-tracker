@@ -19,10 +19,11 @@ const seen = new Set();
 const shot = async (n) => { if (!seen.has(n)) { seen.add(n); await page.screenshot({ path: `${out}/${n}.png` }); console.log('shot', n); } };
 const settle = async () => { for (let i = 0; i < 80; i++) { if (!(await t('skip').count())) return; await page.waitForTimeout(100); } };
 await t('new-run').tap({ force: true }); await t('start-run').tap({ force: true }); await page.waitForTimeout(500);
-let lastAct = 0;
+let lastAct = 0, rewardTries = 0;
 for (let step = 0; step < 3000; step++) {
   await settle();
   const k = await kind();
+  if (k !== 'reward') rewardTries = 0;
   if (k === 'title') break;
   const info = await page.evaluate(() => { const r = window.__fg?.run; return r ? { act: r.act, floor: r.floor } : null; });
   if (k === 'map') {
@@ -45,10 +46,12 @@ for (let step = 0; step < 3000; step++) {
   } else if (k === 'reward') {
     await shot(`reward-act${info?.act}`);
     const rows = page.locator('[data-testid^="reward-"]:not([data-testid^="reward-card"])');
-    if (await rows.count()) {
+    rewardTries++;
+    if ((await rows.count()) && rewardTries < 6) {
       await rows.first().tap({ force: true }); await page.waitForTimeout(250);
       if (await t('card-reward').count()) { await shot('cardreward'); await t('reward-card-0').tap({ force: true }); await t('card-take').tap({ force: true }); }
     } else await t('proceed').tap({ force: true });
+    if (rewardTries >= 6) { await t('proceed').tap({ force: true }); rewardTries = 0; }
   } else if (k === 'rest') { if (await t('rest-heal').count()) await t('rest-heal').tap({ force: true }); else await t('proceed').tap({ force: true }); }
   else if (k === 'shop') await t('proceed').tap({ force: true });
   else if (k === 'event') await page.locator('[data-testid^="event-choice-"]:not([disabled])').first().tap({ force: true });

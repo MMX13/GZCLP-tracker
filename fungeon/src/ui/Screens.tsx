@@ -20,7 +20,7 @@ function safeView(c: CardInstance, run?: RunState): CardView | null {
 // ------------------------------------------------------------------ rewards
 export function RewardScreen({ run }: { run: RunState }) {
   const s = run.screen as Of<'reward'>;
-  const { dispatch } = useGame();
+  const { dispatch, showToast } = useGame();
   const [pick, setPick] = useState<number | null>(null); // reward index of the open card reward
   const [cardSel, setCardSel] = useState<number | null>(null);
   const open = pick !== null ? s.rewards[pick] : null;
@@ -38,7 +38,8 @@ export function RewardScreen({ run }: { run: RunState }) {
             return <Loot key={i} testid={`reward-${i}`} art={<Art k={d?.icon ?? 'acorn'} size={48} />} title={d?.name ?? r.id} sub={d?.desc} onClick={() => dispatch({ type: 'takeReward', index: i })} />;
           }
           const d = POTIONS[r.id];
-          return <Loot key={i} testid={`reward-${i}`} art={<Art k={d?.icon ?? 'potion-red'} size={48} />} title={d?.name ?? r.id} sub={d?.desc} onClick={() => dispatch({ type: 'takeReward', index: i })} />;
+          const full = !run.potions.some((x) => !x);
+          return <Loot key={i} testid={`reward-${i}`} rarity={full ? 'blocked' : undefined} art={<Art k={d?.icon ?? 'potion-red'} size={48} />} title={d?.name ?? r.id} sub={full ? 'Brew slots full - discard one from the top bar first' : d?.desc} onClick={() => (full ? showToast('Brew slots full. Tap a brew above to discard it.') : dispatch({ type: 'takeReward', index: i }))} />;
         })}
         {left === 0 && <p className="muted center">All tidy!</p>}
       </div>

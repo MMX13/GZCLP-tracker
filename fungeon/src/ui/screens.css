@@ -106,3 +106,4 @@
 .node.current { filter: none; opacity: 1; outline: 4px solid var(--gold); outline-offset: 3px; }
 @keyframes nodepulse { 50% { transform: translate(-50%, -50%) scale(1.14); } }
 @keyframes ring { 0% { transform: scale(.9); opacity: .9 } 100% { transform: scale(1.12); opacity: 0 } }
+.loot.blocked { opacity: .6; border-style: dashed; }
